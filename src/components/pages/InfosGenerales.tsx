@@ -356,13 +356,13 @@ const InfosGenerales: React.FC = () => {
 
   return (
     <div className="p-8">
-      {/* Bannière bleue avec titre UNIQUEMENT */}
+      {/* Bannière bleue avec titre déplacé vers la droite */}
       <div className="bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800 rounded-2xl p-8 mb-8 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-blue-600/20 to-transparent"></div>
         
         <div className="relative z-10 flex items-center justify-between">
-          {/* Zone gauche avec titre seulement */}
-          <div className="flex items-center space-x-6">
+          {/* Zone gauche avec titre déplacé vers la droite pour éviter l'abeille */}
+          <div className="flex items-center space-x-6 ml-24">
             <div>
               <h1 className="text-4xl font-bold text-white mb-2">Infos Générales</h1>
               <p className="text-blue-100 text-lg">Informations de base sur votre entreprise</p>
