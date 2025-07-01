@@ -272,7 +272,7 @@ const PlanDeSite: React.FC = () => {
   }, [draggedPage, isHorizontalDrag, dragStartPosition, currentDragPosition]);
 
   const handleDragStart = (page: Page, e?: React.DragEvent) => {
-    console.log('Drag start:', page.name);
+    console.log('PlanDeSite: Drag start:', page.name);
     setDraggedPage(page);
     setIsOverZone(false);
     setDragDirection(null);
@@ -285,7 +285,7 @@ const PlanDeSite: React.FC = () => {
   };
 
   const handleDragEnd = () => {
-    console.log('Drag end');
+    console.log('PlanDeSite: Drag end');
     setDraggedPage(null);
     setDragOverInfo(null);
     setIsOverZone(false);
@@ -336,6 +336,7 @@ const PlanDeSite: React.FC = () => {
 
   const handleDragOver = (e: React.DragEvent, pageId?: string, position?: 'above' | 'below') => {
     e.preventDefault();
+    console.log('PlanDeSite: Drag over:', pageId, position);
     
     if (pageId && position && !isHorizontalDrag) {
       const targetPage = pages.find(p => p.id === pageId);
@@ -354,7 +355,7 @@ const PlanDeSite: React.FC = () => {
     
     if (!draggedPage) return;
 
-    console.log('Drop detected:', { pageId, position, isHorizontalDrag });
+    console.log('PlanDeSite: Drop detected:', { pageId, position, isHorizontalDrag });
 
     // Check if this was a horizontal drag (level change)
     if (isHorizontalDrag && dragStartPosition && currentDragPosition) {

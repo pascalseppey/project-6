@@ -83,7 +83,20 @@ export default function SitemapItem({
       e.preventDefault();
       return;
     }
+    console.log('SitemapItem: Drag start for page:', page.name);
     onDragStart(page, e);
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    console.log('SitemapItem: Drag over page:', page.name);
+    onDragOver(e, page.id, 'above');
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    console.log('SitemapItem: Drop on page:', page.name);
+    onDrop(e, page.id, 'above');
   };
 
   const handleLevelChange = (newLevel: 1 | 2 | 3) => {
@@ -157,8 +170,8 @@ export default function SitemapItem({
         onDragStart={handleDragStart}
         onDrag={onDrag}
         onDragEnd={onDragEnd}
-        onDragOver={(e) => onDragOver(e, page.id, 'above')}
-        onDrop={(e) => onDrop(e, page.id, 'above')}
+        onDragOver={handleDragOver}
+        onDrop={handleDrop}
       >
         <div className="flex items-center gap-4">
           {/* Level Indicator Line */}
