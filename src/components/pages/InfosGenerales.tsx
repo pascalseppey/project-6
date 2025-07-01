@@ -356,13 +356,17 @@ const InfosGenerales: React.FC = () => {
 
   return (
     <div className="p-8">
-      {/* Bannière bleue avec titre déplacé vers la droite */}
+      {/* Bannière bleue avec abeille emoji et titre */}
       <div className="bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800 rounded-2xl p-8 mb-8 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-blue-600/20 to-transparent"></div>
         
         <div className="relative z-10 flex items-center justify-between">
-          {/* Zone gauche avec titre déplacé vers la droite pour éviter l'abeille */}
-          <div className="flex items-center space-x-6 ml-24">
+          {/* Zone gauche avec abeille emoji et titre */}
+          <div className="flex items-center space-x-6">
+            {/* Abeille emoji qui vole à gauche du texte */}
+            <div className="text-6xl animate-bounce">
+              🐝
+            </div>
             <div>
               <h1 className="text-4xl font-bold text-white mb-2">Infos Générales</h1>
               <p className="text-blue-100 text-lg">Informations de base sur votre entreprise</p>
@@ -376,16 +380,6 @@ const InfosGenerales: React.FC = () => {
               <span>Mode édition activé</span>
             </div>
           </div>
-        </div>
-
-        {/* Abeille espion AGRANDIE à gauche, collée au bas de la zone bleue */}
-        <div className="absolute -bottom-2 left-8 z-20">
-          <img 
-            src="/abaille_beezia.png" 
-            alt="Abeille Espion" 
-            className="w-20 h-20 object-contain drop-shadow-xl transform hover:scale-110 transition-transform duration-300 cursor-pointer"
-            title="L'abeille vous observe... 👀"
-          />
         </div>
       </div>
 
