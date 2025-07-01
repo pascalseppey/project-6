@@ -311,7 +311,7 @@ const Dashboard = () => {
             <div className="flex items-center space-x-6">
               <div className="w-20 h-20 flex items-center justify-center">
                 <img 
-                  src="/bee-mascot-strong.png" 
+                  src="/bee-mascot-violet.png" 
                   alt="Beezia Mascot" 
                   className="w-16 h-16 object-contain drop-shadow-lg"
                 />
@@ -565,7 +565,7 @@ const Dashboard = () => {
             <div className="lg:col-span-5 flex flex-col items-center justify-center">
               <div className="w-72 h-72 mb-4 relative">
                 <img 
-                  src="/bee-mascot-strong.png" 
+                  src="/bee-mascot-violet.png" 
                   alt="Beezia Mascot" 
                   className="w-full h-full object-contain drop-shadow-2xl"
                 />
