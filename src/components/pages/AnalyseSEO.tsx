@@ -226,7 +226,7 @@ const AnalyseSEO: React.FC = () => {
                     <AlertTriangle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
                     <div>
                       <div className="font-medium text-red-800">Vitesse de chargement</div>
-                      <div className="text-sm text-red-600">3 pages ont un temps de chargement > 3s</div>
+                      <div className="text-sm text-red-600">3 pages ont un temps de chargement &gt; 3s</div>
                     </div>
                   </div>
                   <div className="flex items-start space-x-3 p-3 bg-yellow-50 rounded-lg">
