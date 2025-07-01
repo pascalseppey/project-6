@@ -4,6 +4,7 @@ import Header from './layout/Header';
 import DashboardPage from './pages/DashboardPage';
 import InfosGenerales from './pages/InfosGenerales';
 import Localisation from './pages/Localisation';
+import DesignBranding from './pages/DesignBranding';
 
 const Dashboard = () => {
   const [activeTab, setActiveTab] = useState('Dashboard');
@@ -86,6 +87,8 @@ const Dashboard = () => {
         return <InfosGenerales />;
       case 'Localisation':
         return <Localisation />;
+      case 'Design & Branding':
+        return <DesignBranding />;
       case 'Dashboard':
       case "Let's Fight !":
       default:
