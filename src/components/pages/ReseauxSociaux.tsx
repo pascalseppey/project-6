@@ -139,7 +139,7 @@ const ReseauxSociaux: React.FC = () => {
       id: '1',
       nom: 'Charly Gaillard',
       plateforme: 'LinkedIn',
-      logo: '💼',
+      logo: '/logo_linkedin.png',
       couleur: '#0077B5',
       lien: 'https://linkedin.com/in/charlygaillard',
       followers: 1250,
@@ -151,7 +151,7 @@ const ReseauxSociaux: React.FC = () => {
       id: '2',
       nom: '@charlygaillard_dev',
       plateforme: 'Instagram',
-      logo: '📸',
+      logo: '/logo_instagram.png',
       couleur: '#E4405F',
       lien: 'https://instagram.com/charlygaillard_dev',
       followers: 850,
@@ -163,7 +163,7 @@ const ReseauxSociaux: React.FC = () => {
       id: '3',
       nom: 'Charly Gaillard SARL',
       plateforme: 'Facebook',
-      logo: '👥',
+      logo: '/logo_facebook.png',
       couleur: '#1877F2',
       lien: 'https://facebook.com/charlygaillard.sarl',
       followers: 420,
@@ -175,7 +175,7 @@ const ReseauxSociaux: React.FC = () => {
       id: '4',
       nom: '@CharlyCodes',
       plateforme: 'Twitter',
-      logo: '🐦',
+      logo: '/logo_twitter.png',
       couleur: '#1DA1F2',
       lien: 'https://twitter.com/charlycodes',
       followers: 680,
@@ -255,13 +255,13 @@ const ReseauxSociaux: React.FC = () => {
 
   const getPlatformLogo = (plateforme: string) => {
     const logos: { [key: string]: string } = {
-      'LinkedIn': '💼',
-      'Instagram': '📸',
-      'Facebook': '👥',
-      'Twitter': '🐦',
-      'YouTube': '📺',
-      'TikTok': '🎵',
-      'Pinterest': '📌',
+      'LinkedIn': '/logo_linkedin.png',
+      'Instagram': '/logo_instagram.png',
+      'Facebook': '/logo_facebook.png',
+      'Twitter': '/logo_twitter.png',
+      'YouTube': '/logo_youtube.png',
+      'TikTok': '/logo_tiktok.png',
+      'Pinterest': '/logo_pinterest.png',
       'Autre': '🌐'
     };
     return logos[plateforme] || '🌐';
@@ -283,142 +283,180 @@ const ReseauxSociaux: React.FC = () => {
               </button>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {/* Présentation horizontale des réseaux sociaux */}
+            <div className="space-y-4">
               {reseauxData.map((reseau, index) => (
                 <div key={reseau.id} className={`bg-white rounded-2xl p-6 border-2 shadow-sm transition-all duration-200 ${
                   reseau.actif 
                     ? 'border-green-200 hover:shadow-lg' 
                     : 'border-gray-200 opacity-75'
                 }`}>
-                  <div className="flex justify-between items-start mb-4">
-                    <div className="flex items-center space-x-3">
-                      <div 
-                        className="w-12 h-12 rounded-xl flex items-center justify-center text-white text-xl font-bold"
-                        style={{ backgroundColor: getPlatformColor(reseau.plateforme) }}
-                      >
-                        {getPlatformLogo(reseau.plateforme)}
+                  {/* Header horizontal avec logo, nom et statut */}
+                  <div className="flex items-center justify-between mb-6">
+                    <div className="flex items-center space-x-4">
+                      {/* Logo du réseau social */}
+                      <div className="w-16 h-16 rounded-xl overflow-hidden border border-gray-200 flex items-center justify-center bg-white">
+                        {reseau.logo.startsWith('/') ? (
+                          <img 
+                            src={reseau.logo} 
+                            alt={`Logo ${reseau.plateforme}`}
+                            className="w-12 h-12 object-contain"
+                          />
+                        ) : (
+                          <span className="text-2xl">{reseau.logo}</span>
+                        )}
                       </div>
+                      
+                      {/* Informations principales */}
                       <div>
-                        <h4 className="text-lg font-semibold text-gray-900">{reseau.plateforme}</h4>
-                        <div className="flex items-center space-x-2">
+                        <h4 className="text-xl font-bold text-gray-900">{reseau.plateforme}</h4>
+                        <p className="text-gray-600 font-medium">{reseau.nom}</p>
+                        <div className="flex items-center space-x-2 mt-1">
                           <div className={`w-2 h-2 rounded-full ${reseau.actif ? 'bg-green-500' : 'bg-gray-400'}`}></div>
-                          <span className={`text-sm ${reseau.actif ? 'text-green-600' : 'text-gray-500'}`}>
+                          <span className={`text-sm font-medium ${reseau.actif ? 'text-green-600' : 'text-gray-500'}`}>
                             {reseau.actif ? 'Actif' : 'Inactif'}
                           </span>
                         </div>
                       </div>
                     </div>
                     
-                    <div className="flex items-center space-x-2">
+                    {/* Actions */}
+                    <div className="flex items-center space-x-3">
+                      {/* Lien externe */}
+                      {reseau.lien && (
+                        <a
+                          href={reseau.lien}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="p-3 text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-xl transition-colors"
+                        >
+                          <ExternalLink className="w-5 h-5" />
+                        </a>
+                      )}
+                      
+                      {/* Toggle actif/inactif */}
                       <button
                         onClick={() => updateReseau(index, 'actif', !reseau.actif)}
-                        className={`p-2 rounded-lg transition-colors ${
+                        className={`p-3 rounded-xl transition-colors ${
                           reseau.actif 
                             ? 'bg-green-100 text-green-600 hover:bg-green-200' 
                             : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                         }`}
                       >
-                        <Users className="w-4 h-4" />
+                        <Users className="w-5 h-5" />
                       </button>
+                      
+                      {/* Supprimer */}
                       {reseauxData.length > 1 && (
                         <button
                           onClick={() => supprimerReseau(index)}
-                          className="p-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors"
+                          className="p-3 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-xl transition-colors"
                         >
-                          <Trash2 className="w-4 h-4" />
+                          <Trash2 className="w-5 h-5" />
                         </button>
                       )}
                     </div>
                   </div>
                   
-                  <div className="space-y-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-600 mb-2">Nom du compte</label>
-                      <EditableField
-                        value={reseau.nom}
-                        onSave={(value) => updateReseau(index, 'nom', value)}
-                        placeholder="Nom du compte"
-                      />
+                  {/* Contenu horizontal */}
+                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    {/* Statistiques */}
+                    <div className="bg-gray-50 rounded-xl p-4">
+                      <h5 className="text-sm font-semibold text-gray-700 mb-3">Statistiques</h5>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="text-center">
+                          <div className="text-2xl font-bold text-blue-600">{reseau.followers.toLocaleString()}</div>
+                          <div className="text-xs text-gray-600">Followers</div>
+                        </div>
+                        <div className="text-center">
+                          <div className="text-2xl font-bold text-green-600">{reseau.postsParSemaine}</div>
+                          <div className="text-xs text-gray-600">Posts/semaine</div>
+                        </div>
+                      </div>
                     </div>
                     
-                    <div>
-                      <label className="block text-sm font-medium text-gray-600 mb-2">Plateforme</label>
-                      <select
-                        value={reseau.plateforme}
-                        onChange={(e) => {
-                          updateReseau(index, 'plateforme', e.target.value);
-                          updateReseau(index, 'couleur', getPlatformColor(e.target.value));
-                          updateReseau(index, 'logo', getPlatformLogo(e.target.value));
-                        }}
-                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      >
-                        <option value="LinkedIn">LinkedIn</option>
-                        <option value="Instagram">Instagram</option>
-                        <option value="Facebook">Facebook</option>
-                        <option value="Twitter">Twitter</option>
-                        <option value="YouTube">YouTube</option>
-                        <option value="TikTok">TikTok</option>
-                        <option value="Pinterest">Pinterest</option>
-                        <option value="Autre">Autre</option>
-                      </select>
+                    {/* Configuration */}
+                    <div className="space-y-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-600 mb-2">Nom du compte</label>
+                        <EditableField
+                          value={reseau.nom}
+                          onSave={(value) => updateReseau(index, 'nom', value)}
+                          placeholder="Nom du compte"
+                        />
+                      </div>
+                      
+                      <div>
+                        <label className="block text-sm font-medium text-gray-600 mb-2">Plateforme</label>
+                        <select
+                          value={reseau.plateforme}
+                          onChange={(e) => {
+                            updateReseau(index, 'plateforme', e.target.value);
+                            updateReseau(index, 'couleur', getPlatformColor(e.target.value));
+                            updateReseau(index, 'logo', getPlatformLogo(e.target.value));
+                          }}
+                          className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                        >
+                          <option value="LinkedIn">LinkedIn</option>
+                          <option value="Instagram">Instagram</option>
+                          <option value="Facebook">Facebook</option>
+                          <option value="Twitter">Twitter</option>
+                          <option value="YouTube">YouTube</option>
+                          <option value="TikTok">TikTok</option>
+                          <option value="Pinterest">Pinterest</option>
+                          <option value="Autre">Autre</option>
+                        </select>
+                      </div>
                     </div>
                     
-                    <div>
-                      <label className="block text-sm font-medium text-gray-600 mb-2">Lien vers le profil</label>
-                      <div className="flex items-center space-x-2">
+                    {/* Description et paramètres */}
+                    <div className="space-y-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-600 mb-2">Lien vers le profil</label>
                         <EditableField
                           value={reseau.lien}
                           onSave={(value) => updateReseau(index, 'lien', value)}
                           placeholder="https://..."
                         />
-                        {reseau.lien && (
-                          <a
-                            href={reseau.lien}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="p-2 text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg transition-colors"
-                          >
-                            <ExternalLink className="w-4 h-4" />
-                          </a>
-                        )}
-                      </div>
-                    </div>
-                    
-                    <div className="grid grid-cols-2 gap-3">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-600 mb-2">Followers</label>
-                        <input
-                          type="number"
-                          value={reseau.followers}
-                          onChange={(e) => updateReseau(index, 'followers', parseInt(e.target.value) || 0)}
-                          className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                          placeholder="0"
-                        />
                       </div>
                       
-                      <div>
-                        <label className="block text-sm font-medium text-gray-600 mb-2">Posts/semaine</label>
-                        <input
-                          type="number"
-                          value={reseau.postsParSemaine}
-                          onChange={(e) => updateReseau(index, 'postsParSemaine', parseInt(e.target.value) || 0)}
-                          className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                          placeholder="0"
-                          min="0"
-                          max="20"
-                        />
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-600 mb-2">Followers</label>
+                          <input
+                            type="number"
+                            value={reseau.followers}
+                            onChange={(e) => updateReseau(index, 'followers', parseInt(e.target.value) || 0)}
+                            className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                            placeholder="0"
+                          />
+                        </div>
+                        
+                        <div>
+                          <label className="block text-sm font-medium text-gray-600 mb-2">Posts/semaine</label>
+                          <input
+                            type="number"
+                            value={reseau.postsParSemaine}
+                            onChange={(e) => updateReseau(index, 'postsParSemaine', parseInt(e.target.value) || 0)}
+                            className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                            placeholder="0"
+                            min="0"
+                            max="20"
+                          />
+                        </div>
                       </div>
                     </div>
-                    
-                    <div>
-                      <label className="block text-sm font-medium text-gray-600 mb-2">Description</label>
-                      <EditableField
-                        value={reseau.description}
-                        onSave={(value) => updateReseau(index, 'description', value)}
-                        multiline={true}
-                        placeholder="Description de l'usage de ce compte..."
-                      />
-                    </div>
+                  </div>
+                  
+                  {/* Description complète */}
+                  <div className="mt-4 pt-4 border-t border-gray-200">
+                    <label className="block text-sm font-medium text-gray-600 mb-2">Description</label>
+                    <EditableField
+                      value={reseau.description}
+                      onSave={(value) => updateReseau(index, 'description', value)}
+                      multiline={true}
+                      placeholder="Description de l'usage de ce compte..."
+                    />
                   </div>
                 </div>
               ))}
@@ -477,11 +515,16 @@ const ReseauxSociaux: React.FC = () => {
                   .filter(reseau => reseau.actif)
                   .map((reseau, index) => (
                   <div key={reseau.id} className="text-center p-4 bg-white rounded-xl border border-gray-200">
-                    <div 
-                      className="w-12 h-12 rounded-xl flex items-center justify-center text-white text-xl font-bold mx-auto mb-2"
-                      style={{ backgroundColor: reseau.couleur }}
-                    >
-                      {reseau.logo}
+                    <div className="w-12 h-12 rounded-xl overflow-hidden border border-gray-200 flex items-center justify-center bg-white mx-auto mb-2">
+                      {reseau.logo.startsWith('/') ? (
+                        <img 
+                          src={reseau.logo} 
+                          alt={`Logo ${reseau.plateforme}`}
+                          className="w-8 h-8 object-contain"
+                        />
+                      ) : (
+                        <span className="text-xl">{reseau.logo}</span>
+                      )}
                     </div>
                     <div className="text-sm font-medium text-gray-700">{reseau.plateforme}</div>
                     <div className="text-2xl font-bold text-gray-900">{reseau.postsParSemaine}</div>
@@ -550,11 +593,16 @@ const ReseauxSociaux: React.FC = () => {
                   .map((reseau, index) => (
                   <div key={reseau.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
                     <div className="flex items-center space-x-4">
-                      <div 
-                        className="w-12 h-12 rounded-xl flex items-center justify-center text-white text-xl font-bold"
-                        style={{ backgroundColor: reseau.couleur }}
-                      >
-                        {reseau.logo}
+                      <div className="w-12 h-12 rounded-xl overflow-hidden border border-gray-200 flex items-center justify-center bg-white">
+                        {reseau.logo.startsWith('/') ? (
+                          <img 
+                            src={reseau.logo} 
+                            alt={`Logo ${reseau.plateforme}`}
+                            className="w-8 h-8 object-contain"
+                          />
+                        ) : (
+                          <span className="text-xl">{reseau.logo}</span>
+                        )}
                       </div>
                       <div>
                         <div className="font-semibold text-gray-900">{reseau.plateforme}</div>
