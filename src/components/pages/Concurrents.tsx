@@ -618,16 +618,20 @@ const Concurrents: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="p-8">
-        {/* Bannière bleue avec abeille emoji et titre */}
+        {/* Bannière bleue avec judoka et titre */}
         <div className="bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800 rounded-2xl p-8 mb-8 relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-br from-blue-600/20 to-transparent"></div>
           
           <div className="relative z-10 flex items-center justify-between">
-            {/* Zone gauche avec abeille emoji et titre */}
+            {/* Zone gauche avec judoka agrandi x2.5 et titre */}
             <div className="flex items-center space-x-6">
-              {/* Abeille emoji qui vole à gauche du texte */}
-              <div className="text-6xl animate-bounce">
-                🐝
+              {/* Judoka agrandi x2.5 (de w-16 h-16 à w-40 h-40) */}
+              <div className="w-50 h-50 flex items-center justify-center">
+                <img 
+                  src="/judoka.png" 
+                  alt="Judoka Beezia" 
+                  className="w-40 h-40 object-contain drop-shadow-lg"
+                />
               </div>
               <div>
                 <h1 className="text-4xl font-bold text-white mb-2">Concurrents</h1>
