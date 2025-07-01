@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { MapPin, Navigation, Globe, Building, Map, Compass, Edit3, Save, X, Info } from 'lucide-react';
+import { MapPin, Plus, Building, Phone, Globe, Star, Clock, Calendar, Edit3, Save, X, Info, Trash2 } from 'lucide-react';
 
 interface EditableFieldProps {
   value: string;
@@ -117,273 +117,512 @@ const EditableField: React.FC<EditableFieldProps> = ({
   );
 };
 
+interface GMBFiche {
+  id: string;
+  nom: string;
+  commune: string;
+  infos: {
+    nomFiche: string;
+    categorie: string;
+    description: string;
+    lien: string;
+  };
+  contact: {
+    siteWeb: string;
+    telephone: string;
+    commune: string;
+    adresse: string;
+    canton: string;
+  };
+  avis: Array<{
+    nom: string;
+    prenom: string;
+    date: string;
+    note: number;
+    commentaire: string;
+  }>;
+  horaires: Array<{
+    jour: string;
+    ouvert: boolean;
+    heureOuverture: string;
+    heureFermeture: string;
+  }>;
+  joursFeries: Array<{
+    nom: string;
+    date: string;
+    ferme: boolean;
+    horaireSpecial: string;
+  }>;
+}
+
 const Localisation: React.FC = () => {
-  const [activeTab, setActiveTab] = useState('Adresse');
+  const [activeFiche, setActiveFiche] = useState(0);
+  const [activeTab, setActiveTab] = useState('Infos');
   
-  // États pour tous les champs éditables
-  const [adresseData, setAdresseData] = useState({
-    adresseComplete: 'Rue de la Paix 15, 1000 Lausanne, Suisse',
-    codePostal: '1000',
-    ville: 'Lausanne',
-    pays: 'Suisse',
-    latitude: '46.5197',
-    longitude: '6.6323'
-  });
-
-  const [zoneServiceData, setZoneServiceData] = useState({
-    rayonAction: '50 km autour de Lausanne',
-    description: 'Nous intervenons dans toute la région lémanique, de Genève à Montreux, en passant par Yverdon et Fribourg.'
-  });
-
-  const [villesData, setVillesData] = useState([
-    { nom: 'Lausanne', statut: 'Principal', distance: '0 km' },
-    { nom: 'Genève', statut: 'Couvert', distance: '62 km' },
-    { nom: 'Montreux', statut: 'Couvert', distance: '28 km' },
-    { nom: 'Yverdon', statut: 'Couvert', distance: '35 km' },
-    { nom: 'Fribourg', statut: 'Couvert', distance: '45 km' },
-    { nom: 'Neuchâtel', statut: 'Couvert', distance: '55 km' }
-  ]);
-
-  const [presenceData, setPresenceData] = useState([
-    { plateforme: 'Google My Business', description: 'Fiche d\'entreprise complète', statut: 'Actif' },
-    { plateforme: 'Apple Maps', description: 'Référencement local iOS', statut: 'En cours' },
-    { plateforme: 'Bing Places', description: 'Microsoft Maps & Cortana', statut: 'Actif' },
-    { plateforme: 'Waze', description: 'Navigation GPS communautaire', statut: 'Actif' },
-    { plateforme: 'TripAdvisor', description: 'Avis et recommandations', statut: 'En attente' },
-    { plateforme: 'Foursquare', description: 'Check-ins et découverte locale', statut: 'Actif' }
-  ]);
-
-  const [horairesData, setHorairesData] = useState([
-    { jour: 'Lundi', heures: '09:00 - 18:00', ouvert: true },
-    { jour: 'Mardi', heures: '09:00 - 18:00', ouvert: true },
-    { jour: 'Mercredi', heures: '09:00 - 18:00', ouvert: true },
-    { jour: 'Jeudi', heures: '09:00 - 18:00', ouvert: true },
-    { jour: 'Vendredi', heures: '09:00 - 17:00', ouvert: true },
-    { jour: 'Samedi', heures: 'Fermé', ouvert: false },
-    { jour: 'Dimanche', heures: 'Fermé', ouvert: false }
+  // État pour les fiches GMB
+  const [fichesList, setFichesList] = useState<GMBFiche[]>([
+    {
+      id: '1',
+      nom: 'Siège',
+      commune: 'Lausanne',
+      infos: {
+        nomFiche: 'Charly Gaillard SARL - Siège',
+        categorie: 'Agence de marketing digital',
+        description: 'Spécialiste en développement web et marketing digital. Nous accompagnons les PME dans leur transformation numérique.',
+        lien: 'https://charlygaillard.ch'
+      },
+      contact: {
+        siteWeb: 'https://charlygaillard.ch',
+        telephone: '+41 79 123 45 67',
+        commune: 'Lausanne',
+        adresse: 'Rue de la Paix 15',
+        canton: 'Vaud'
+      },
+      avis: [
+        {
+          nom: 'Martin',
+          prenom: 'Sophie',
+          date: '2024-12-15',
+          note: 5,
+          commentaire: 'Excellent service, très professionnel et à l\'écoute de nos besoins.'
+        },
+        {
+          nom: 'Dubois',
+          prenom: 'Pierre',
+          date: '2024-12-10',
+          note: 4,
+          commentaire: 'Très satisfait du site web créé pour notre entreprise.'
+        }
+      ],
+      horaires: [
+        { jour: 'Lundi', ouvert: true, heureOuverture: '09:00', heureFermeture: '18:00' },
+        { jour: 'Mardi', ouvert: true, heureOuverture: '09:00', heureFermeture: '18:00' },
+        { jour: 'Mercredi', ouvert: true, heureOuverture: '09:00', heureFermeture: '18:00' },
+        { jour: 'Jeudi', ouvert: true, heureOuverture: '09:00', heureFermeture: '18:00' },
+        { jour: 'Vendredi', ouvert: true, heureOuverture: '09:00', heureFermeture: '17:00' },
+        { jour: 'Samedi', ouvert: false, heureOuverture: '', heureFermeture: '' },
+        { jour: 'Dimanche', ouvert: false, heureOuverture: '', heureFermeture: '' }
+      ],
+      joursFeries: [
+        { nom: 'Nouvel An', date: '2025-01-01', ferme: true, horaireSpecial: '' },
+        { nom: 'Fête du Travail', date: '2025-05-01', ferme: true, horaireSpecial: '' },
+        { nom: 'Fête Nationale', date: '2025-08-01', ferme: true, horaireSpecial: '' },
+        { nom: 'Noël', date: '2025-12-25', ferme: true, horaireSpecial: '' }
+      ]
+    }
   ]);
 
   const tabs = [
-    { id: 'Adresse', label: 'Adresse', icon: Building },
-    { id: 'Zone Service', label: 'Zone Service', icon: Navigation },
-    { id: 'Villes', label: 'Villes', icon: Map },
-    { id: 'Présence', label: 'Présence', icon: Globe },
-    { id: 'Horaires', label: 'Horaires', icon: Compass },
+    { id: 'Infos', label: 'Infos', icon: Building },
+    { id: 'Contact', label: 'Contact', icon: Phone },
+    { id: 'Avis', label: 'Avis', icon: Star },
+    { id: 'Horaires', label: 'Horaires', icon: Clock },
+    { id: 'Jours fériés', label: 'Jours fériés', icon: Calendar },
   ];
 
-  const updateAdresse = (field: string, value: string) => {
-    setAdresseData(prev => ({ ...prev, [field]: value }));
+  const ajouterFiche = () => {
+    const nouvelleFiche: GMBFiche = {
+      id: Date.now().toString(),
+      nom: `Succursale ${fichesList.length}`,
+      commune: '',
+      infos: {
+        nomFiche: '',
+        categorie: '',
+        description: '',
+        lien: ''
+      },
+      contact: {
+        siteWeb: '',
+        telephone: '',
+        commune: '',
+        adresse: '',
+        canton: ''
+      },
+      avis: [],
+      horaires: [
+        { jour: 'Lundi', ouvert: true, heureOuverture: '09:00', heureFermeture: '18:00' },
+        { jour: 'Mardi', ouvert: true, heureOuverture: '09:00', heureFermeture: '18:00' },
+        { jour: 'Mercredi', ouvert: true, heureOuverture: '09:00', heureFermeture: '18:00' },
+        { jour: 'Jeudi', ouvert: true, heureOuverture: '09:00', heureFermeture: '18:00' },
+        { jour: 'Vendredi', ouvert: true, heureOuverture: '09:00', heureFermeture: '17:00' },
+        { jour: 'Samedi', ouvert: false, heureOuverture: '', heureFermeture: '' },
+        { jour: 'Dimanche', ouvert: false, heureOuverture: '', heureFermeture: '' }
+      ],
+      joursFeries: [
+        { nom: 'Nouvel An', date: '2025-01-01', ferme: true, horaireSpecial: '' },
+        { nom: 'Fête du Travail', date: '2025-05-01', ferme: true, horaireSpecial: '' },
+        { nom: 'Fête Nationale', date: '2025-08-01', ferme: true, horaireSpecial: '' },
+        { nom: 'Noël', date: '2025-12-25', ferme: true, horaireSpecial: '' }
+      ]
+    };
+    
+    setFichesList([...fichesList, nouvelleFiche]);
+    setActiveFiche(fichesList.length);
   };
 
-  const updateZoneService = (field: string, value: string) => {
-    setZoneServiceData(prev => ({ ...prev, [field]: value }));
+  const supprimerFiche = (index: number) => {
+    if (fichesList.length > 1) {
+      const nouvellesList = fichesList.filter((_, i) => i !== index);
+      setFichesList(nouvellesList);
+      if (activeFiche >= nouvellesList.length) {
+        setActiveFiche(nouvellesList.length - 1);
+      }
+    }
   };
 
-  const updateVille = (index: number, field: string, value: string) => {
-    setVillesData(prev => prev.map((item, i) => 
-      i === index ? { ...item, [field]: value } : item
-    ));
+  const updateFicheInfo = (field: string, value: string) => {
+    const updatedFiches = [...fichesList];
+    updatedFiches[activeFiche] = {
+      ...updatedFiches[activeFiche],
+      infos: {
+        ...updatedFiches[activeFiche].infos,
+        [field]: value
+      }
+    };
+    setFichesList(updatedFiches);
   };
 
-  const updatePresence = (index: number, field: string, value: string) => {
-    setPresenceData(prev => prev.map((item, i) => 
-      i === index ? { ...item, [field]: value } : item
-    ));
+  const updateFicheContact = (field: string, value: string) => {
+    const updatedFiches = [...fichesList];
+    updatedFiches[activeFiche] = {
+      ...updatedFiches[activeFiche],
+      contact: {
+        ...updatedFiches[activeFiche].contact,
+        [field]: value
+      }
+    };
+    setFichesList(updatedFiches);
   };
 
-  const updateHoraire = (index: number, field: string, value: string | boolean) => {
-    setHorairesData(prev => prev.map((item, i) => 
-      i === index ? { ...item, [field]: value } : item
-    ));
+  const updateFicheHoraire = (index: number, field: string, value: string | boolean) => {
+    const updatedFiches = [...fichesList];
+    updatedFiches[activeFiche].horaires[index] = {
+      ...updatedFiches[activeFiche].horaires[index],
+      [field]: value
+    };
+    setFichesList(updatedFiches);
+  };
+
+  const ajouterAvis = () => {
+    const updatedFiches = [...fichesList];
+    updatedFiches[activeFiche].avis.push({
+      nom: '',
+      prenom: '',
+      date: new Date().toISOString().split('T')[0],
+      note: 5,
+      commentaire: ''
+    });
+    setFichesList(updatedFiches);
+  };
+
+  const updateAvis = (index: number, field: string, value: string | number) => {
+    const updatedFiches = [...fichesList];
+    updatedFiches[activeFiche].avis[index] = {
+      ...updatedFiches[activeFiche].avis[index],
+      [field]: value
+    };
+    setFichesList(updatedFiches);
+  };
+
+  const supprimerAvis = (index: number) => {
+    const updatedFiches = [...fichesList];
+    updatedFiches[activeFiche].avis = updatedFiches[activeFiche].avis.filter((_, i) => i !== index);
+    setFichesList(updatedFiches);
   };
 
   const renderTabContent = () => {
+    const ficheActive = fichesList[activeFiche];
+    
     switch (activeTab) {
-      case 'Adresse':
+      case 'Infos':
         return (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Adresse complète</h3>
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Nom de la fiche</h3>
               <EditableField
-                value={adresseData.adresseComplete}
-                onSave={(value) => updateAdresse('adresseComplete', value)}
-                placeholder="Votre adresse complète"
+                value={ficheActive.infos.nomFiche}
+                onSave={(value) => updateFicheInfo('nomFiche', value)}
+                placeholder="Nom de votre fiche GMB"
+              />
+            </div>
+            
+            <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Catégorie</h3>
+              <EditableField
+                value={ficheActive.infos.categorie}
+                onSave={(value) => updateFicheInfo('categorie', value)}
+                placeholder="Catégorie d'activité"
+              />
+            </div>
+            
+            <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm md:col-span-2">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Description</h3>
+              <EditableField
+                value={ficheActive.infos.description}
+                onSave={(value) => updateFicheInfo('description', value)}
                 multiline={true}
+                placeholder="Description de votre activité..."
               />
             </div>
             
-            <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Code postal</h3>
+            <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm md:col-span-2">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Lien</h3>
               <EditableField
-                value={adresseData.codePostal}
-                onSave={(value) => updateAdresse('codePostal', value)}
-                placeholder="Code postal"
-              />
-            </div>
-            
-            <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Ville</h3>
-              <EditableField
-                value={adresseData.ville}
-                onSave={(value) => updateAdresse('ville', value)}
-                placeholder="Ville"
-              />
-            </div>
-            
-            <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Pays</h3>
-              <EditableField
-                value={adresseData.pays}
-                onSave={(value) => updateAdresse('pays', value)}
-                placeholder="Pays"
-              />
-            </div>
-            
-            <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Latitude</h3>
-              <EditableField
-                value={adresseData.latitude}
-                onSave={(value) => updateAdresse('latitude', value)}
-                placeholder="Latitude GPS"
-              />
-            </div>
-            
-            <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Longitude</h3>
-              <EditableField
-                value={adresseData.longitude}
-                onSave={(value) => updateAdresse('longitude', value)}
-                placeholder="Longitude GPS"
+                value={ficheActive.infos.lien}
+                onSave={(value) => updateFicheInfo('lien', value)}
+                placeholder="https://votre-site-web.com"
               />
             </div>
           </div>
         );
 
-      case 'Zone Service':
+      case 'Contact':
         return (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Rayon d'action</h3>
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Site web</h3>
               <EditableField
-                value={zoneServiceData.rayonAction}
-                onSave={(value) => updateZoneService('rayonAction', value)}
-                placeholder="Définissez votre rayon d'action"
+                value={ficheActive.contact.siteWeb}
+                onSave={(value) => updateFicheContact('siteWeb', value)}
+                placeholder="https://votre-site.com"
               />
             </div>
             
             <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Description de la zone</h3>
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Téléphone</h3>
               <EditableField
-                value={zoneServiceData.description}
-                onSave={(value) => updateZoneService('description', value)}
+                value={ficheActive.contact.telephone}
+                onSave={(value) => updateFicheContact('telephone', value)}
+                placeholder="+41 XX XXX XX XX"
+              />
+            </div>
+            
+            <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Commune</h3>
+              <EditableField
+                value={ficheActive.contact.commune}
+                onSave={(value) => updateFicheContact('commune', value)}
+                placeholder="Nom de la commune"
+              />
+            </div>
+            
+            <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Canton</h3>
+              <EditableField
+                value={ficheActive.contact.canton}
+                onSave={(value) => updateFicheContact('canton', value)}
+                placeholder="Canton"
+              />
+            </div>
+            
+            <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm md:col-span-2">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Adresse</h3>
+              <EditableField
+                value={ficheActive.contact.adresse}
+                onSave={(value) => updateFicheContact('adresse', value)}
                 multiline={true}
-                placeholder="Décrivez votre zone de service..."
+                placeholder="Adresse complète"
               />
             </div>
           </div>
         );
 
-      case 'Villes':
+      case 'Avis':
         return (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {villesData.map((ville, index) => (
-              <div key={index} className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm">
-                <div className="mb-4">
-                  <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider mb-3">
-                    Ville {index + 1}
-                  </h3>
-                  <EditableField
-                    value={ville.nom}
-                    onSave={(value) => updateVille(index, 'nom', value)}
-                    placeholder="Nom de la ville"
-                    isTitle={true}
-                  />
+          <div className="space-y-6">
+            <div className="flex justify-between items-center">
+              <h3 className="text-xl font-semibold text-gray-900">Avis clients</h3>
+              <button
+                onClick={ajouterAvis}
+                className="flex items-center space-x-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                <Plus className="w-4 h-4" />
+                <span>Ajouter un avis</span>
+              </button>
+            </div>
+            
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {ficheActive.avis.map((avis, index) => (
+                <div key={index} className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm">
+                  <div className="flex justify-between items-start mb-4">
+                    <h4 className="text-lg font-semibold text-gray-900">Avis {index + 1}</h4>
+                    <button
+                      onClick={() => supprimerAvis(index)}
+                      className="text-red-500 hover:text-red-700 transition-colors"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-4 mb-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-600 mb-2">Nom</label>
+                      <EditableField
+                        value={avis.nom}
+                        onSave={(value) => updateAvis(index, 'nom', value)}
+                        placeholder="Nom"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-600 mb-2">Prénom</label>
+                      <EditableField
+                        value={avis.prenom}
+                        onSave={(value) => updateAvis(index, 'prenom', value)}
+                        placeholder="Prénom"
+                      />
+                    </div>
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-4 mb-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-600 mb-2">Date</label>
+                      <input
+                        type="date"
+                        value={avis.date}
+                        onChange={(e) => updateAvis(index, 'date', e.target.value)}
+                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-600 mb-2">Note</label>
+                      <select
+                        value={avis.note}
+                        onChange={(e) => updateAvis(index, 'note', parseInt(e.target.value))}
+                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      >
+                        <option value={1}>1 ⭐</option>
+                        <option value={2}>2 ⭐⭐</option>
+                        <option value={3}>3 ⭐⭐⭐</option>
+                        <option value={4}>4 ⭐⭐⭐⭐</option>
+                        <option value={5}>5 ⭐⭐⭐⭐⭐</option>
+                      </select>
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-600 mb-2">Commentaire</label>
+                    <EditableField
+                      value={avis.commentaire}
+                      onSave={(value) => updateAvis(index, 'commentaire', value)}
+                      multiline={true}
+                      placeholder="Commentaire de l'avis..."
+                    />
+                  </div>
                 </div>
-                <div className="mb-4">
-                  <h4 className="text-sm font-medium text-gray-600 mb-2">Statut</h4>
-                  <EditableField
-                    value={ville.statut}
-                    onSave={(value) => updateVille(index, 'statut', value)}
-                    placeholder="Statut de couverture"
-                  />
-                </div>
-                <div>
-                  <h4 className="text-sm font-medium text-gray-600 mb-2">Distance</h4>
-                  <EditableField
-                    value={ville.distance}
-                    onSave={(value) => updateVille(index, 'distance', value)}
-                    placeholder="Distance depuis votre base"
-                  />
-                </div>
-              </div>
-            ))}
-          </div>
-        );
-
-      case 'Présence':
-        return (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {presenceData.map((presence, index) => (
-              <div key={index} className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm">
-                <div className="mb-4">
-                  <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider mb-3">
-                    Plateforme {index + 1}
-                  </h3>
-                  <EditableField
-                    value={presence.plateforme}
-                    onSave={(value) => updatePresence(index, 'plateforme', value)}
-                    placeholder="Nom de la plateforme"
-                    isTitle={true}
-                  />
-                </div>
-                <div className="mb-4">
-                  <h4 className="text-sm font-medium text-gray-600 mb-2">Description</h4>
-                  <EditableField
-                    value={presence.description}
-                    onSave={(value) => updatePresence(index, 'description', value)}
-                    multiline={true}
-                    placeholder="Description de la plateforme..."
-                  />
-                </div>
-                <div>
-                  <h4 className="text-sm font-medium text-gray-600 mb-2">Statut</h4>
-                  <EditableField
-                    value={presence.statut}
-                    onSave={(value) => updatePresence(index, 'statut', value)}
-                    placeholder="Statut actuel"
-                  />
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         );
 
       case 'Horaires':
         return (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {horairesData.map((horaire, index) => (
+            {ficheActive.horaires.map((horaire, index) => (
               <div key={index} className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm">
-                <div className="mb-4">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-3">
-                    {horaire.jour}
-                  </h3>
-                  <EditableField
-                    value={horaire.heures}
-                    onSave={(value) => updateHoraire(index, 'heures', value)}
-                    placeholder="Horaires d'ouverture"
-                  />
-                </div>
-                <div className="flex items-center space-x-2">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">{horaire.jour}</h3>
+                
+                <div className="flex items-center space-x-2 mb-4">
                   <input
                     type="checkbox"
                     checked={horaire.ouvert}
-                    onChange={(e) => updateHoraire(index, 'ouvert', e.target.checked)}
+                    onChange={(e) => updateFicheHoraire(index, 'ouvert', e.target.checked)}
                     className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
                   />
                   <label className="text-sm text-gray-600">Ouvert</label>
                 </div>
+                
+                {horaire.ouvert && (
+                  <div className="space-y-3">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-600 mb-1">Ouverture</label>
+                      <input
+                        type="time"
+                        value={horaire.heureOuverture}
+                        onChange={(e) => updateFicheHoraire(index, 'heureOuverture', e.target.value)}
+                        className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-600 mb-1">Fermeture</label>
+                      <input
+                        type="time"
+                        value={horaire.heureFermeture}
+                        onChange={(e) => updateFicheHoraire(index, 'heureFermeture', e.target.value)}
+                        className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      />
+                    </div>
+                  </div>
+                )}
               </div>
             ))}
+          </div>
+        );
+
+      case 'Jours fériés':
+        return (
+          <div className="space-y-6">
+            <div className="bg-blue-50 rounded-xl p-6 border border-blue-200">
+              <h3 className="text-lg font-semibold text-blue-900 mb-2">Jours fériés du canton {ficheActive.contact.canton || 'de Vaud'}</h3>
+              <p className="text-blue-700">Les jours fériés sont automatiquement configurés selon votre canton. Vous pouvez ajouter des fermetures spéciales ou horaires réduits.</p>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {ficheActive.joursFeries.map((jour, index) => (
+                <div key={index} className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm">
+                  <h4 className="text-lg font-semibold text-gray-900 mb-3">{jour.nom}</h4>
+                  
+                  <div className="space-y-3">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-600 mb-1">Date</label>
+                      <input
+                        type="date"
+                        value={jour.date}
+                        className="w-full p-2 border border-gray-300 rounded-lg bg-gray-50"
+                        readOnly
+                      />
+                    </div>
+                    
+                    <div className="flex items-center space-x-2">
+                      <input
+                        type="checkbox"
+                        checked={jour.ferme}
+                        className="w-4 h-4 text-red-600 bg-gray-100 border-gray-300 rounded focus:ring-red-500"
+                        readOnly
+                      />
+                      <label className="text-sm text-gray-600">Fermé</label>
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium text-gray-600 mb-1">Horaire spécial</label>
+                      <input
+                        type="text"
+                        value={jour.horaireSpecial}
+                        placeholder="Ex: 10:00 - 16:00"
+                        className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      />
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+            
+            <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm">
+              <h4 className="text-lg font-semibold text-gray-900 mb-4">Ajouter une fermeture spéciale</h4>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <input
+                  type="text"
+                  placeholder="Nom de l'événement"
+                  className="p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+                <input
+                  type="date"
+                  className="p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+                <button className="bg-blue-600 text-white px-4 py-3 rounded-lg hover:bg-blue-700 transition-colors">
+                  Ajouter
+                </button>
+              </div>
+            </div>
           </div>
         );
 
@@ -394,16 +633,20 @@ const Localisation: React.FC = () => {
 
   return (
     <div className="p-8">
-      {/* Bannière bleue avec titre déplacé vers la droite */}
+      {/* Bannière bleue avec abeille emoji et titre */}
       <div className="bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800 rounded-2xl p-8 mb-8 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-blue-600/20 to-transparent"></div>
         
         <div className="relative z-10 flex items-center justify-between">
-          {/* Zone gauche avec titre déplacé vers la droite pour éviter l'abeille */}
-          <div className="flex items-center space-x-6 ml-24">
+          {/* Zone gauche avec abeille emoji et titre */}
+          <div className="flex items-center space-x-6">
+            {/* Abeille emoji qui vole à gauche du texte */}
+            <div className="text-6xl animate-bounce">
+              🐝
+            </div>
             <div>
               <h1 className="text-4xl font-bold text-white mb-2">Localisation</h1>
-              <p className="text-blue-100 text-lg">Gérez votre présence géographique et locale</p>
+              <p className="text-blue-100 text-lg">Gérez vos fiches Google My Business</p>
             </div>
           </div>
           
@@ -415,19 +658,50 @@ const Localisation: React.FC = () => {
             </div>
           </div>
         </div>
+      </div>
 
-        {/* Abeille espion AGRANDIE à gauche, collée au bas de la zone bleue */}
-        <div className="absolute -bottom-2 left-8 z-20">
-          <img 
-            src="/abaille_beezia.png" 
-            alt="Abeille Espion" 
-            className="w-20 h-20 object-contain drop-shadow-xl transform hover:scale-110 transition-transform duration-300 cursor-pointer"
-            title="L'abeille surveille votre territoire... 🗺️"
-          />
+      {/* Sélecteur de fiches GMB */}
+      <div className="mb-8">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-2xl font-bold text-gray-900">Fiches Google My Business</h2>
+          <button
+            onClick={ajouterFiche}
+            className="flex items-center space-x-2 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors"
+          >
+            <Plus className="w-4 h-4" />
+            <span>Ajouter une fiche</span>
+          </button>
+        </div>
+        
+        <div className="flex flex-wrap gap-3">
+          {fichesList.map((fiche, index) => (
+            <div key={fiche.id} className="relative">
+              <button
+                onClick={() => setActiveFiche(index)}
+                className={`flex flex-col items-center p-4 rounded-xl border-2 transition-all duration-200 ${
+                  activeFiche === index
+                    ? 'border-blue-600 bg-blue-50 text-blue-900'
+                    : 'border-gray-200 bg-white text-gray-700 hover:border-gray-300'
+                }`}
+              >
+                <div className="text-lg font-bold">{fiche.nom}</div>
+                <div className="text-sm text-gray-500">{fiche.commune || 'Non défini'}</div>
+              </button>
+              
+              {fichesList.length > 1 && (
+                <button
+                  onClick={() => supprimerFiche(index)}
+                  className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 transition-colors"
+                >
+                  <X className="w-3 h-3" />
+                </button>
+              )}
+            </div>
+          ))}
         </div>
       </div>
 
-      {/* Menu horizontal des onglets avec icône d'information */}
+      {/* Menu horizontal des onglets */}
       <div className="mb-8 relative">
         <nav className="flex bg-gray-100 p-1 rounded-xl" aria-label="Tabs">
           {tabs.map((tab, index) => {
@@ -437,8 +711,8 @@ const Localisation: React.FC = () => {
             
             return (
               <div key={tab.id} className={`relative ${isLast ? 'ml-auto' : 'mr-2'}`}>
-                {/* Icône d'information pour Horaires */}
-                {tab.id === 'Horaires' && (
+                {/* Icône d'information pour Jours fériés */}
+                {tab.id === 'Jours fériés' && (
                   <div className="absolute -top-6 right-2 group">
                     <Info 
                       className="w-4 h-4 text-gray-400 hover:text-blue-600 cursor-help transition-colors" 
@@ -446,11 +720,11 @@ const Localisation: React.FC = () => {
                     {/* Tooltip */}
                     <div className="absolute bottom-full right-0 mb-2 w-80 bg-gray-900 text-white text-sm rounded-lg p-3 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
                       <div className="space-y-1">
-                        <p className="font-semibold">Comment modifier vos informations</p>
-                        <p>• Cliquez sur n'importe quel champ pour le modifier</p>
-                        <p>• Appuyez sur Entrée pour sauvegarder (champs simples)</p>
-                        <p>• Utilisez les boutons Sauvegarder/Annuler pour les textes longs</p>
-                        <p>• Échap pour annuler les modifications en cours</p>
+                        <p className="font-semibold">Gestion des jours fériés</p>
+                        <p>• Les jours fériés sont configurés selon votre canton</p>
+                        <p>• Vous pouvez ajouter des fermetures spéciales</p>
+                        <p>• Définissez des horaires réduits si nécessaire</p>
+                        <p>• Les modifications s'appliquent à la fiche sélectionnée</p>
                       </div>
                       {/* Flèche du tooltip */}
                       <div className="absolute top-full right-4 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
@@ -475,7 +749,7 @@ const Localisation: React.FC = () => {
         </nav>
       </div>
       
-      {/* Contenu de l'onglet actif en cellules séparées */}
+      {/* Contenu de l'onglet actif */}
       <div className="mb-8">
         {renderTabContent()}
       </div>
@@ -491,11 +765,11 @@ const Localisation: React.FC = () => {
           <div className="text-center">
             <MapPin className="w-16 h-16 text-blue-600 mx-auto mb-4" />
             <h3 className="text-xl font-semibold text-gray-700 mb-2">Carte interactive</h3>
-            <p className="text-gray-600">La carte sera intégrée ici avec votre localisation et zone de service</p>
+            <p className="text-gray-600">La carte sera intégrée ici avec vos {fichesList.length} fiche{fichesList.length > 1 ? 's' : ''} Google My Business</p>
             <div className="mt-4 flex items-center justify-center space-x-4 text-sm text-gray-500">
-              <span>📍 {adresseData.ville}</span>
-              <span>📏 {zoneServiceData.rayonAction}</span>
-              <span>🏙️ {villesData.length} villes</span>
+              <span>📍 {fichesList[activeFiche]?.contact.commune || 'Non défini'}</span>
+              <span>🏢 {fichesList.length} fiche{fichesList.length > 1 ? 's' : ''}</span>
+              <span>⭐ {fichesList[activeFiche]?.avis.length || 0} avis</span>
             </div>
           </div>
         </div>
