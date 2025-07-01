@@ -634,12 +634,12 @@ const DesignBranding: React.FC = () => {
         <div className="relative z-10 flex items-center justify-between">
           {/* Zone gauche avec abeille boxeuse et titre */}
           <div className="flex items-center space-x-6">
-            {/* Abeille boxeuse qui remplace l'emoji */}
-            <div className="w-20 h-20 flex items-center justify-center">
+            {/* Abeille boxeuse agrandie x2.5 sans animation */}
+            <div className="w-50 h-50 flex items-center justify-center">
               <img 
                 src="/ChatGPT Image 1 juil. 2025, 04_32_03.png" 
                 alt="Abeille Boxeuse Beezia" 
-                className="w-16 h-16 object-contain drop-shadow-lg animate-pulse"
+                className="w-40 h-40 object-contain drop-shadow-lg"
               />
             </div>
             <div>
