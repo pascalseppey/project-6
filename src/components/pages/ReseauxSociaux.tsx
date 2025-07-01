@@ -623,14 +623,14 @@ const ReseauxSociaux: React.FC = () => {
         <div className="absolute inset-0 bg-gradient-to-br from-blue-600/20 to-transparent"></div>
         
         <div className="relative z-10 flex items-center justify-between">
-          {/* Zone gauche avec petite abeille boxeuse et titre */}
+          {/* Zone gauche avec petite abeille boxeuse agrandie x2.5 et titre */}
           <div className="flex items-center space-x-6">
-            {/* Petite abeille boxeuse */}
-            <div className="w-20 h-20 flex items-center justify-center">
+            {/* Petite abeille boxeuse agrandie x2.5 */}
+            <div className="w-50 h-50 flex items-center justify-center">
               <img 
                 src="/ChatGPT Image 1 juil. 2025, 04_23_49.png" 
                 alt="Petite Abeille Boxeuse Beezia" 
-                className="w-16 h-16 object-contain drop-shadow-lg"
+                className="w-40 h-40 object-contain drop-shadow-lg"
               />
             </div>
             <div>
