@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Edit3, Type, Search, Save, X, Plus, Trash2, Copy, CheckCircle, AlertTriangle, FileText, Key, Tag } from 'lucide-react';
 import { ContentBlock } from '../types/builder';
 import ContentBlockItem from '../ContentBlockItem';
@@ -303,25 +303,67 @@ const TexteSEO: React.FC = () => {
   // Calculer le nombre total de mots
   const totalWords = getAllText().split(/\s+/).filter(word => word.length > 0).length;
 
-  // Fonction pour obtenir l'indentation selon le niveau
-  const getPageIndentation = (level: number) => {
-    switch (level) {
-      case 1: return 'pl-0';
-      case 2: return 'pl-6';
-      case 3: return 'pl-12';
-      default: return 'pl-0';
-    }
+  // Organiser les pages en structure hiérarchique
+  const organizePages = () => {
+    const homePages = pages.filter(p => p.type === 'home');
+    const level1Pages = pages.filter(p => p.level === 1 && p.type !== 'home');
+    
+    const getChildPages = (parentId: string, level: number) => {
+      return pages.filter(p => {
+        if (p.level !== level) return false;
+        
+        // Trouver le parent logique en remontant dans la liste
+        const parentIndex = pages.findIndex(parent => parent.id === parentId);
+        const currentIndex = pages.findIndex(current => current.id === p.id);
+        
+        if (parentIndex === -1 || currentIndex === -1 || currentIndex <= parentIndex) return false;
+        
+        // Vérifier qu'il n'y a pas de page de niveau égal ou inférieur entre le parent et l'enfant
+        for (let i = parentIndex + 1; i < currentIndex; i++) {
+          if (pages[i].level <= level - 1) return false;
+        }
+        
+        return true;
+      });
+    };
+
+    return { homePages, level1Pages, getChildPages };
   };
 
-  // Fonction pour obtenir la couleur selon le niveau
-  const getPageColor = (level: number) => {
-    switch (level) {
-      case 1: return 'border-l-4 border-blue-500 bg-blue-50';
-      case 2: return 'border-l-4 border-green-500 bg-green-50';
-      case 3: return 'border-l-4 border-orange-500 bg-orange-50';
-      default: return 'border-l-4 border-gray-500 bg-gray-50';
-    }
-  };
+  const { homePages, level1Pages, getChildPages } = organizePages();
+
+  // Composant pour afficher une page dans le sitemap
+  const PageNode: React.FC<{ page: Page; isActive: boolean; onClick: () => void; children?: React.ReactNode }> = ({ 
+    page, 
+    isActive, 
+    onClick, 
+    children 
+  }) => (
+    <div className="flex flex-col items-center">
+      <button
+        onClick={onClick}
+        className={`
+          px-4 py-3 rounded-lg border-2 transition-all duration-200 min-w-32 text-center
+          ${isActive 
+            ? 'border-blue-500 bg-blue-50 text-blue-900 shadow-md' 
+            : 'border-gray-300 bg-white text-gray-700 hover:border-blue-300 hover:bg-blue-50'
+          }
+          ${page.type === 'home' ? 'font-bold' : 'font-medium'}
+        `}
+      >
+        <div className="text-sm">{page.name}</div>
+        {page.type === 'home' && (
+          <div className="text-xs text-blue-600 mt-1">🏠 Accueil</div>
+        )}
+      </button>
+      {children && (
+        <div className="mt-4 flex flex-col items-center space-y-3">
+          <div className="w-px h-4 bg-gray-300"></div>
+          {children}
+        </div>
+      )}
+    </div>
+  );
 
   const renderSubTabContent = () => {
     switch (activeSubTab) {
@@ -701,115 +743,137 @@ const TexteSEO: React.FC = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-        {/* Sidebar - Liste des pages */}
-        <div className="lg:col-span-1">
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 sticky top-8">
-            <h2 className="text-xl font-semibold text-gray-900 mb-6 flex items-center">
-              <FileText className="w-5 h-5 mr-2" />
-              Pages du site
-            </h2>
+      {/* Plan de site horizontal */}
+      <div className="mb-8">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
+          <h2 className="text-xl font-semibold text-gray-900 mb-6 flex items-center">
+            <FileText className="w-5 h-5 mr-2" />
+            Plan du site
+          </h2>
+          
+          <div className="space-y-8">
+            {/* Page d'accueil en haut */}
+            {homePages.map(homePage => (
+              <div key={homePage.id} className="flex flex-col items-center">
+                <PageNode
+                  page={homePage}
+                  isActive={activePageId === homePage.id}
+                  onClick={() => setActivePageId(homePage.id)}
+                />
+              </div>
+            ))}
             
-            <div className="space-y-2">
-              {pages.map((page) => (
-                <button
-                  key={page.id}
-                  onClick={() => setActivePageId(page.id)}
-                  className={`
-                    w-full text-left p-3 rounded-lg transition-all duration-200 
-                    ${getPageIndentation(page.level)}
-                    ${activePageId === page.id 
-                      ? `${getPageColor(page.level)} shadow-sm` 
-                      : 'hover:bg-gray-50 border border-transparent'
-                    }
-                  `}
-                >
-                  <div className="flex items-center space-x-2">
-                    {page.type === 'home' ? (
-                      <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
-                    ) : (
-                      <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
-                    )}
-                    <span className={`text-sm font-medium ${
-                      activePageId === page.id ? 'text-gray-900' : 'text-gray-700'
-                    }`}>
-                      {page.name}
-                    </span>
-                  </div>
-                </button>
-              ))}
+            {/* Ligne de séparation */}
+            <div className="flex justify-center">
+              <div className="w-full max-w-4xl h-px bg-gray-300"></div>
             </div>
-
-            {/* Statistiques de la page active */}
-            <div className="mt-6 pt-6 border-t border-gray-200">
-              <h3 className="text-sm font-medium text-gray-700 mb-3">Page actuelle</h3>
-              <div className="space-y-2 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Mots-clés :</span>
-                  <span className="font-medium">{activePageData.keywords.length}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Contenu :</span>
-                  <span className="font-medium">{totalWords} mots</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Titre :</span>
-                  <span className={`font-medium ${
-                    activePageData.title.length > 60 ? 'text-red-600' : 'text-green-600'
-                  }`}>
-                    {activePageData.title.length}/60
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Meta :</span>
-                  <span className={`font-medium ${
-                    activePageData.metaDescription.length > 155 ? 'text-red-600' : 'text-green-600'
-                  }`}>
-                    {activePageData.metaDescription.length}/155
-                  </span>
-                </div>
+            
+            {/* Pages de niveau 1 horizontalement */}
+            <div className="flex justify-center">
+              <div className="flex flex-wrap justify-center gap-8 max-w-6xl">
+                {level1Pages.map(level1Page => {
+                  const level2Children = getChildPages(level1Page.id, 2);
+                  
+                  return (
+                    <PageNode
+                      key={level1Page.id}
+                      page={level1Page}
+                      isActive={activePageId === level1Page.id}
+                      onClick={() => setActivePageId(level1Page.id)}
+                    >
+                      {level2Children.length > 0 && (
+                        <div className="flex flex-col items-center space-y-3">
+                          {level2Children.map(level2Page => {
+                            const level3Children = getChildPages(level2Page.id, 3);
+                            
+                            return (
+                              <PageNode
+                                key={level2Page.id}
+                                page={level2Page}
+                                isActive={activePageId === level2Page.id}
+                                onClick={() => setActivePageId(level2Page.id)}
+                              >
+                                {level3Children.length > 0 && (
+                                  <div className="flex flex-col items-center space-y-2">
+                                    {level3Children.map(level3Page => (
+                                      <PageNode
+                                        key={level3Page.id}
+                                        page={level3Page}
+                                        isActive={activePageId === level3Page.id}
+                                        onClick={() => setActivePageId(level3Page.id)}
+                                      />
+                                    ))}
+                                  </div>
+                                )}
+                              </PageNode>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </PageNode>
+                  );
+                })}
               </div>
             </div>
           </div>
         </div>
+      </div>
 
-        {/* Contenu principal */}
-        <div className="lg:col-span-3">
-          {/* En-tête de la page active */}
-          <div className="mb-6">
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">
-              {activePage?.name || 'Page non trouvée'}
-            </h2>
+      {/* Contenu principal */}
+      <div>
+        {/* En-tête de la page active */}
+        <div className="mb-6">
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">
+            {activePage?.name || 'Page non trouvée'}
+          </h2>
+          <div className="flex items-center space-x-4 text-sm text-gray-600">
+            <span>URL: {activePage?.slug}</span>
+            <span>•</span>
+            <span>Mots-clés: {activePageData.keywords.length}</span>
+            <span>•</span>
+            <span>Contenu: {totalWords} mots</span>
+            <span>•</span>
+            <span className={`${
+              activePageData.title.length > 60 ? 'text-red-600' : 'text-green-600'
+            }`}>
+              Titre: {activePageData.title.length}/60
+            </span>
+            <span>•</span>
+            <span className={`${
+              activePageData.metaDescription.length > 155 ? 'text-red-600' : 'text-green-600'
+            }`}>
+              Meta: {activePageData.metaDescription.length}/155
+            </span>
           </div>
-
-          {/* Onglets de second niveau */}
-          <div className="mb-8">
-            <nav className="flex bg-gray-100 p-1 rounded-xl" aria-label="Sub Tabs">
-              {subTabs.map((tab) => {
-                const Icon = tab.icon;
-                const isActive = activeSubTab === tab.id;
-                
-                return (
-                  <button
-                    key={tab.id}
-                    onClick={() => setActiveSubTab(tab.id)}
-                    className={`flex-1 flex items-center justify-center space-x-3 px-4 py-3 text-sm font-medium rounded-lg transition-all duration-200 ${
-                      isActive
-                        ? 'bg-gradient-to-r from-blue-600 via-blue-700 to-blue-800 text-white shadow-lg'
-                        : 'text-gray-700 hover:text-gray-900 hover:bg-white'
-                    }`}
-                  >
-                    <Icon className={`w-4 h-4 ${isActive ? 'text-white' : 'text-gray-500'}`} />
-                    <span>{tab.label}</span>
-                  </button>
-                );
-              })}
-            </nav>
-          </div>
-
-          {/* Contenu de l'onglet actif */}
-          {renderSubTabContent()}
         </div>
+
+        {/* Onglets de second niveau */}
+        <div className="mb-8">
+          <nav className="flex bg-gray-100 p-1 rounded-xl" aria-label="Sub Tabs">
+            {subTabs.map((tab) => {
+              const Icon = tab.icon;
+              const isActive = activeSubTab === tab.id;
+              
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveSubTab(tab.id)}
+                  className={`flex-1 flex items-center justify-center space-x-3 px-4 py-3 text-sm font-medium rounded-lg transition-all duration-200 ${
+                    isActive
+                      ? 'bg-gradient-to-r from-blue-600 via-blue-700 to-blue-800 text-white shadow-lg'
+                      : 'text-gray-700 hover:text-gray-900 hover:bg-white'
+                  }`}
+                >
+                  <Icon className={`w-4 h-4 ${isActive ? 'text-white' : 'text-gray-500'}`} />
+                  <span>{tab.label}</span>
+                </button>
+              );
+            })}
+          </nav>
+        </div>
+
+        {/* Contenu de l'onglet actif */}
+        {renderSubTabContent()}
       </div>
     </div>
   );
