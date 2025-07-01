@@ -120,99 +120,176 @@ export const useClientManager = () => {
   // Créer des données par défaut pour un client
   const createDefaultClientData = (clientId: string, nom?: string, email?: string): ClientData => {
     const clientMetadata = availableClients.find(c => c.id === clientId);
+    const clientName = nom || clientMetadata?.nom || 'waiting_for_data';
+    
+    // Générer 10 concurrents par prestation avec scores calculés
+    const generateConcurrents = (prestationName: string) => {
+      const concurrents = [];
+      for (let i = 1; i <= 10; i++) {
+        const scores = {
+          qualite: Math.floor(Math.random() * 10) + 1,
+          prix: Math.floor(Math.random() * 10) + 1,
+          delais: Math.floor(Math.random() * 10) + 1,
+          service: Math.floor(Math.random() * 10) + 1,
+          innovation: Math.floor(Math.random() * 10) + 1,
+          reputation: Math.floor(Math.random() * 10) + 1,
+          portfolio: Math.floor(Math.random() * 10) + 1,
+          communication: Math.floor(Math.random() * 10) + 1
+        };
+        
+        const scoreTotal = Object.values(scores).reduce((sum, score) => sum + score, 0);
+        
+        concurrents.push({
+          id: `concurrent-${prestationName}-${i}`,
+          nom: `Concurrent ${i} ${prestationName}`,
+          siteWeb: `https://concurrent${i}-${prestationName.toLowerCase().replace(/\s+/g, '')}.ch`,
+          description: 'waiting_for_data',
+          scores,
+          scoreTotal,
+          classement: 0 // Sera calculé après tri
+        });
+      }
+      
+      // Trier par score total et assigner les classements
+      concurrents.sort((a, b) => b.scoreTotal - a.scoreTotal);
+      concurrents.forEach((concurrent, index) => {
+        concurrent.classement = index + 1;
+      });
+      
+      return concurrents;
+    };
     
     return {
       id: clientId,
       metadata: {
-        nom: nom || clientMetadata?.nom || 'Nouveau Client',
-        email: email || clientMetadata?.email || 'contact@example.com',
+        nom: clientName,
+        email: email || clientMetadata?.email || 'waiting_for_data@example.com',
         createdAt: new Date().toISOString(),
         lastModified: new Date().toISOString()
       },
       data: {
         // Infos générales
         entreprise: {
-          raisonSociale: nom || 'Nouvelle Entreprise',
-          secteurActivite: 'Services',
+          raisonSociale: clientName,
+          secteurActivite: 'waiting_for_data',
           nombreEmployes: '1-5',
           anneeFondation: new Date().getFullYear().toString()
         },
         adn: {
-          historique: '',
-          presentation: ''
+          historique: 'waiting_for_data',
+          presentation: 'waiting_for_data'
         },
         valeurs: [
-          { title: 'Innovation', description: 'Nous restons à la pointe des technologies' },
-          { title: 'Excellence', description: 'Qualité et professionnalisme dans chaque projet' },
-          { title: 'Transparence', description: 'Communication claire et honnête' }
+          { title: 'waiting_for_data', description: 'waiting_for_data' },
+          { title: 'waiting_for_data', description: 'waiting_for_data' },
+          { title: 'waiting_for_data', description: 'waiting_for_data' }
         ],
         cibles: [
-          { title: 'PME', description: 'Petites et moyennes entreprises' },
-          { title: 'Startups', description: 'Jeunes entreprises innovantes' }
+          { title: 'waiting_for_data', description: 'waiting_for_data' },
+          { title: 'waiting_for_data', description: 'waiting_for_data' }
         ],
         prestations: [
-          { title: 'Développement Web', description: 'Sites web modernes et responsives' },
-          { title: 'Marketing Digital', description: 'Stratégies SEO et réseaux sociaux' }
+          { title: 'waiting_for_data', description: 'waiting_for_data' },
+          { title: 'waiting_for_data', description: 'waiting_for_data' }
         ],
         
         // Design & Branding
         logo: {
-          nom: 'Logo Principal',
-          description: 'Logo moderne et épuré',
+          nom: 'waiting_for_data',
+          description: 'waiting_for_data',
           formats: ['PNG', 'SVG', 'PDF'],
-          couleurs: 'Bleu et Blanc',
-          usage: 'Site web, documents officiels'
+          couleurs: 'waiting_for_data',
+          usage: 'waiting_for_data'
         },
         couleurs: [
-          { nom: 'Bleu Principal', hex: '#2563eb', usage: 'Couleur principale', ordre: 1 },
-          { nom: 'Gris Neutre', hex: '#6b7280', usage: 'Textes secondaires', ordre: 2 }
+          { nom: 'Noir', hex: '#000000', usage: 'waiting_for_data', ordre: 1 }
         ],
         typographies: [
-          { nom: 'Inter Bold', famille: 'Inter', usage: 'titre', taille: '32px', poids: '700' },
-          { nom: 'Inter Regular', famille: 'Inter', usage: 'texte', taille: '16px', poids: '400' }
+          { nom: 'Arial Bold', famille: 'Arial', usage: 'titre', taille: '32px', poids: '700' },
+          { nom: 'Arial Regular', famille: 'Arial', usage: 'texte', taille: '16px', poids: '400' }
         ],
         
         // Réseaux sociaux
         reseaux: [
           {
             id: '1',
-            nom: nom || 'Entreprise',
-            plateforme: 'LinkedIn',
-            lien: '',
-            followers: 0,
+            nom: clientName,
+            plateforme: 'Facebook',
+            lien: 'waiting_for_data',
+            followers: 0000,
             postsParSemaine: 2,
+            actif: true
+          },
+          {
+            id: '2',
+            nom: clientName,
+            plateforme: 'LinkedIn',
+            lien: 'waiting_for_data',
+            followers: 0000,
+            postsParSemaine: 3,
+            actif: true
+          },
+          {
+            id: '3',
+            nom: clientName,
+            plateforme: 'Instagram',
+            lien: 'waiting_for_data',
+            followers: 0000,
+            postsParSemaine: 4,
             actif: true
           }
         ],
         strategie: {
-          objectifs: 'Augmenter la visibilité et attirer de nouveaux clients',
-          cibleAudience: 'PME et entrepreneurs',
-          tonalite: 'Professionnel mais accessible',
-          frequenceGlobale: '5 posts par semaine',
-          themesContenu: 'Expertise métier, conseils, actualités',
-          kpis: 'Croissance followers +10%/mois, engagement >3%'
+          objectifs: '',
+          cibleAudience: '',
+          tonalite: '',
+          frequenceGlobale: '',
+          themesContenu: '',
+          kpis: ''
         },
         
         // Localisation
         fichesList: [
           {
             id: '1',
-            nom: 'Siège',
-            commune: '',
+            nom: 'waiting_for_data',
+            commune: 'waiting_for_data',
             infos: {
-              nomFiche: nom || 'Nouvelle Entreprise',
-              categorie: 'Services',
-              description: '',
-              lien: ''
+              nomFiche: clientName,
+              categorie: 'waiting_for_data',
+              description: 'waiting_for_data',
+              lien: 'waiting_for_data'
             },
             contact: {
-              siteWeb: '',
-              telephone: '',
-              commune: '',
-              adresse: '',
-              canton: ''
+              siteWeb: 'waiting_for_data',
+              telephone: 'waiting_for_data',
+              commune: 'waiting_for_data',
+              adresse: 'waiting_for_data',
+              canton: 'Vaud'
             },
-            avis: [],
+            avis: [
+              {
+                nom: 'Dupont',
+                prenom: 'Jean',
+                date: '2024-12-01',
+                note: 5,
+                commentaire: 'waiting_for_data'
+              },
+              {
+                nom: 'Martin',
+                prenom: 'Marie',
+                date: '2024-12-15',
+                note: 4,
+                commentaire: 'waiting_for_data'
+              },
+              {
+                nom: 'Bernard',
+                prenom: 'Pierre',
+                date: '2024-12-20',
+                note: 5,
+                commentaire: 'waiting_for_data'
+              }
+            ],
             horaires: [
               { jour: 'Lundi', ouvert: true, heureOuverture: '09:00', heureFermeture: '18:00' },
               { jour: 'Mardi', ouvert: true, heureOuverture: '09:00', heureFermeture: '18:00' },
@@ -231,16 +308,41 @@ export const useClientManager = () => {
           }
         ],
         
-        // Concurrents
+        // Concurrents - 6 prestations avec 10 concurrents chacune
         prestationsConcurrentielles: [
           {
-            nom: 'Services Généraux',
-            description: 'Analyse concurrentielle générale',
-            concurrents: []
+            nom: 'Prestation 1',
+            description: 'waiting_for_data',
+            concurrents: generateConcurrents('Prestation 1')
+          },
+          {
+            nom: 'Prestation 2',
+            description: 'waiting_for_data',
+            concurrents: generateConcurrents('Prestation 2')
+          },
+          {
+            nom: 'Prestation 3',
+            description: 'waiting_for_data',
+            concurrents: generateConcurrents('Prestation 3')
+          },
+          {
+            nom: 'Prestation 4',
+            description: 'waiting_for_data',
+            concurrents: generateConcurrents('Prestation 4')
+          },
+          {
+            nom: 'Prestation 5',
+            description: 'waiting_for_data',
+            concurrents: generateConcurrents('Prestation 5')
+          },
+          {
+            nom: 'Prestation 6',
+            description: 'waiting_for_data',
+            concurrents: generateConcurrents('Prestation 6')
           }
         ],
         
-        // Plan de site
+        // Plan de site - Structure standard
         pages: [
           {
             id: '1',
@@ -253,8 +355,8 @@ export const useClientManager = () => {
           },
           {
             id: '2',
-            name: 'Services',
-            slug: '/services',
+            name: 'Prestations',
+            slug: '/prestations',
             level: 1,
             type: 'page',
             isFixed: false,
@@ -262,12 +364,75 @@ export const useClientManager = () => {
           },
           {
             id: '3',
+            name: 'Prestation 1',
+            slug: '/prestations/prestation-1',
+            level: 2,
+            type: 'page',
+            isFixed: false,
+            order: 2,
+          },
+          {
+            id: '4',
+            name: 'Prestation 2',
+            slug: '/prestations/prestation-2',
+            level: 2,
+            type: 'page',
+            isFixed: false,
+            order: 3,
+          },
+          {
+            id: '5',
+            name: 'Prestation 3',
+            slug: '/prestations/prestation-3',
+            level: 2,
+            type: 'page',
+            isFixed: false,
+            order: 4,
+          },
+          {
+            id: '6',
+            name: 'Prestation 4',
+            slug: '/prestations/prestation-4',
+            level: 2,
+            type: 'page',
+            isFixed: false,
+            order: 5,
+          },
+          {
+            id: '7',
+            name: 'Prestation 5',
+            slug: '/prestations/prestation-5',
+            level: 2,
+            type: 'page',
+            isFixed: false,
+            order: 6,
+          },
+          {
+            id: '8',
+            name: 'Prestation 6',
+            slug: '/prestations/prestation-6',
+            level: 2,
+            type: 'page',
+            isFixed: false,
+            order: 7,
+          },
+          {
+            id: '9',
+            name: 'À propos',
+            slug: '/a-propos',
+            level: 1,
+            type: 'page',
+            isFixed: false,
+            order: 8,
+          },
+          {
+            id: '10',
             name: 'Contact',
             slug: '/contact',
             level: 1,
             type: 'page',
             isFixed: false,
-            order: 2,
+            order: 9,
           }
         ],
         
@@ -275,10 +440,10 @@ export const useClientManager = () => {
         seoPages: {
           '1': {
             pageId: '1',
-            title: `${nom || 'Entreprise'} - Accueil`,
-            metaDescription: 'Page d\'accueil de notre entreprise',
-            h1: `Bienvenue chez ${nom || 'Notre Entreprise'}`,
-            keywords: ['accueil', 'entreprise'],
+            title: `${clientName} - waiting_for_data`,
+            metaDescription: 'waiting_for_data',
+            h1: `waiting_for_data`,
+            keywords: ['waiting_for_data'],
             content: []
           }
         }
