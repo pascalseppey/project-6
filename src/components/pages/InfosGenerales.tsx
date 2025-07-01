@@ -96,16 +96,16 @@ const EditableField: React.FC<EditableFieldProps> = ({
           {value ? (
             <div className={`text-gray-900 ${
               isTitle 
-                ? 'text-xl font-semibold' 
+                ? 'text-2xl font-bold' 
                 : multiline 
-                  ? 'text-sm leading-relaxed' 
-                  : 'text-sm'
+                  ? 'text-base leading-relaxed' 
+                  : 'text-base'
             }`}>
               {value}
             </div>
           ) : (
             <div className={`text-gray-400 italic ${
-              isTitle ? 'text-xl' : 'text-sm'
+              isTitle ? 'text-2xl' : 'text-base'
             }`}>
               {placeholder}
             </div>
@@ -198,183 +198,154 @@ const InfosGenerales: React.FC = () => {
     switch (activeTab) {
       case 'Entreprise':
         return (
-          <div className="space-y-8">
-            <div>
-              <h2 className="text-2xl font-bold text-gray-900 mb-8">Informations de l'entreprise</h2>
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <div className="space-y-6">
-                  <div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-3">Raison sociale</h3>
-                    <EditableField
-                      value={entrepriseData.raisonSociale}
-                      onSave={(value) => updateEntreprise('raisonSociale', value)}
-                      placeholder="Nom de votre entreprise"
-                    />
-                  </div>
-                  
-                  <div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-3">Secteur d'activité</h3>
-                    <EditableField
-                      value={entrepriseData.secteurActivite}
-                      onSave={(value) => updateEntreprise('secteurActivite', value)}
-                      placeholder="Votre secteur d'activité"
-                    />
-                  </div>
-                </div>
-                
-                <div className="space-y-6">
-                  <div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-3">Nombre d'employés</h3>
-                    <EditableField
-                      value={entrepriseData.nombreEmployes}
-                      onSave={(value) => updateEntreprise('nombreEmployes', value)}
-                      placeholder="Nombre d'employés"
-                    />
-                  </div>
-                  
-                  <div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-3">Année de fondation</h3>
-                    <EditableField
-                      value={entrepriseData.anneeFondation}
-                      onSave={(value) => updateEntreprise('anneeFondation', value)}
-                      placeholder="Année de création"
-                    />
-                  </div>
-                </div>
-              </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Raison sociale</h3>
+              <EditableField
+                value={entrepriseData.raisonSociale}
+                onSave={(value) => updateEntreprise('raisonSociale', value)}
+                placeholder="Nom de votre entreprise"
+              />
+            </div>
+            
+            <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Secteur d'activité</h3>
+              <EditableField
+                value={entrepriseData.secteurActivite}
+                onSave={(value) => updateEntreprise('secteurActivite', value)}
+                placeholder="Votre secteur d'activité"
+              />
+            </div>
+            
+            <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Nombre d'employés</h3>
+              <EditableField
+                value={entrepriseData.nombreEmployes}
+                onSave={(value) => updateEntreprise('nombreEmployes', value)}
+                placeholder="Nombre d'employés"
+              />
+            </div>
+            
+            <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Année de fondation</h3>
+              <EditableField
+                value={entrepriseData.anneeFondation}
+                onSave={(value) => updateEntreprise('anneeFondation', value)}
+                placeholder="Année de création"
+              />
             </div>
           </div>
         );
 
       case 'ADN':
         return (
-          <div className="space-y-8">
-            <div>
-              <h2 className="text-2xl font-bold text-gray-900 mb-8">ADN de l'entreprise</h2>
-              <div className="space-y-8">
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Historique de l'entreprise</h3>
-                  <EditableField
-                    value={adnData.historique}
-                    onSave={(value) => updateAdn('historique', value)}
-                    multiline={true}
-                    placeholder="Racontez l'histoire de votre entreprise..."
-                  />
-                </div>
-                
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Texte de présentation</h3>
-                  <EditableField
-                    value={adnData.presentation}
-                    onSave={(value) => updateAdn('presentation', value)}
-                    multiline={true}
-                    placeholder="Présentez votre entreprise en quelques lignes..."
-                  />
-                </div>
-              </div>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Historique de l'entreprise</h3>
+              <EditableField
+                value={adnData.historique}
+                onSave={(value) => updateAdn('historique', value)}
+                multiline={true}
+                placeholder="Racontez l'histoire de votre entreprise..."
+              />
+            </div>
+            
+            <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Texte de présentation</h3>
+              <EditableField
+                value={adnData.presentation}
+                onSave={(value) => updateAdn('presentation', value)}
+                multiline={true}
+                placeholder="Présentez votre entreprise en quelques lignes..."
+              />
             </div>
           </div>
         );
 
       case 'Valeurs':
         return (
-          <div className="space-y-8">
-            <div>
-              <h2 className="text-2xl font-bold text-gray-900 mb-8">Valeurs de l'entreprise</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {valeursData.map((valeur, index) => (
-                  <div key={index} className="space-y-4">
-                    <div>
-                      <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider mb-3">
-                        Valeur {index + 1}
-                      </h3>
-                      <EditableField
-                        value={valeur.title}
-                        onSave={(value) => updateValeur(index, 'title', value)}
-                        placeholder="Nom de la valeur"
-                        isTitle={true}
-                      />
-                    </div>
-                    <div className="mt-4">
-                      <EditableField
-                        value={valeur.description}
-                        onSave={(value) => updateValeur(index, 'description', value)}
-                        multiline={true}
-                        placeholder="Description de cette valeur..."
-                      />
-                    </div>
-                  </div>
-                ))}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {valeursData.map((valeur, index) => (
+              <div key={index} className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm">
+                <div className="mb-4">
+                  <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider mb-3">
+                    Valeur {index + 1}
+                  </h3>
+                  <EditableField
+                    value={valeur.title}
+                    onSave={(value) => updateValeur(index, 'title', value)}
+                    placeholder="Nom de la valeur"
+                    isTitle={true}
+                  />
+                </div>
+                <div>
+                  <EditableField
+                    value={valeur.description}
+                    onSave={(value) => updateValeur(index, 'description', value)}
+                    multiline={true}
+                    placeholder="Description de cette valeur..."
+                  />
+                </div>
               </div>
-            </div>
+            ))}
           </div>
         );
 
       case 'Cibles Clients':
         return (
-          <div className="space-y-8">
-            <div>
-              <h2 className="text-2xl font-bold text-gray-900 mb-8">Cibles clients</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {ciblesData.map((cible, index) => (
-                  <div key={index} className="space-y-4">
-                    <div>
-                      <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider mb-3">
-                        Client {index + 1}
-                      </h3>
-                      <EditableField
-                        value={cible.title}
-                        onSave={(value) => updateCible(index, 'title', value)}
-                        placeholder="Type de client"
-                        isTitle={true}
-                      />
-                    </div>
-                    <div className="mt-4">
-                      <EditableField
-                        value={cible.description}
-                        onSave={(value) => updateCible(index, 'description', value)}
-                        multiline={true}
-                        placeholder="Description de cette cible..."
-                      />
-                    </div>
-                  </div>
-                ))}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {ciblesData.map((cible, index) => (
+              <div key={index} className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm">
+                <div className="mb-4">
+                  <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider mb-3">
+                    Client {index + 1}
+                  </h3>
+                  <EditableField
+                    value={cible.title}
+                    onSave={(value) => updateCible(index, 'title', value)}
+                    placeholder="Type de client"
+                    isTitle={true}
+                  />
+                </div>
+                <div>
+                  <EditableField
+                    value={cible.description}
+                    onSave={(value) => updateCible(index, 'description', value)}
+                    multiline={true}
+                    placeholder="Description de cette cible..."
+                  />
+                </div>
               </div>
-            </div>
+            ))}
           </div>
         );
 
       case 'Prestations':
         return (
-          <div className="space-y-8">
-            <div>
-              <h2 className="text-2xl font-bold text-gray-900 mb-8">Prestations</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {prestationsData.map((prestation, index) => (
-                  <div key={index} className="space-y-4">
-                    <div>
-                      <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider mb-3">
-                        Prestation {index + 1}
-                      </h3>
-                      <EditableField
-                        value={prestation.title}
-                        onSave={(value) => updatePrestation(index, 'title', value)}
-                        placeholder="Nom de la prestation"
-                        isTitle={true}
-                      />
-                    </div>
-                    <div className="mt-4">
-                      <EditableField
-                        value={prestation.description}
-                        onSave={(value) => updatePrestation(index, 'description', value)}
-                        multiline={true}
-                        placeholder="Description de cette prestation..."
-                      />
-                    </div>
-                  </div>
-                ))}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {prestationsData.map((prestation, index) => (
+              <div key={index} className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm">
+                <div className="mb-4">
+                  <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider mb-3">
+                    Prestation {index + 1}
+                  </h3>
+                  <EditableField
+                    value={prestation.title}
+                    onSave={(value) => updatePrestation(index, 'title', value)}
+                    placeholder="Nom de la prestation"
+                    isTitle={true}
+                  />
+                </div>
+                <div>
+                  <EditableField
+                    value={prestation.description}
+                    onSave={(value) => updatePrestation(index, 'description', value)}
+                    multiline={true}
+                    placeholder="Description de cette prestation..."
+                  />
+                </div>
               </div>
-            </div>
+            ))}
           </div>
         );
 
@@ -415,41 +386,38 @@ const InfosGenerales: React.FC = () => {
         </div>
       </div>
 
-      {/* Layout principal avec sous-onglets à gauche et contenu à droite */}
-      <div className="flex gap-8">
-        {/* Navigation par onglets - Colonne de gauche */}
-        <div className="w-80 flex-shrink-0">
-          <nav className="space-y-2" aria-label="Tabs">
-            {tabs.map((tab) => {
-              const Icon = tab.icon;
-              const isActive = activeTab === tab.id;
-              
-              return (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`w-full flex items-center space-x-4 px-6 py-4 text-left rounded-xl transition-all duration-200 ${
-                    isActive
-                      ? 'bg-gradient-to-r from-blue-600 via-blue-700 to-blue-800 text-white shadow-lg'
-                      : 'text-gray-700 hover:bg-gray-100'
-                  }`}
-                >
-                  <Icon className={`w-5 h-5 ${isActive ? 'text-white' : 'text-gray-500'}`} />
-                  <span className="font-medium">{tab.label}</span>
-                </button>
-              );
-            })}
-          </nav>
-        </div>
-        
-        {/* Contenu de l'onglet actif - Zone principale à droite */}
-        <div className="flex-1 bg-white rounded-2xl p-8">
-          {renderTabContent()}
-        </div>
+      {/* Menu horizontal des onglets */}
+      <div className="mb-8">
+        <nav className="flex space-x-1 bg-gray-100 p-1 rounded-xl" aria-label="Tabs">
+          {tabs.map((tab) => {
+            const Icon = tab.icon;
+            const isActive = activeTab === tab.id;
+            
+            return (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`flex items-center space-x-3 px-6 py-3 text-sm font-medium rounded-lg transition-all duration-200 ${
+                  isActive
+                    ? 'bg-gradient-to-r from-blue-600 via-blue-700 to-blue-800 text-white shadow-lg'
+                    : 'text-gray-700 hover:text-gray-900 hover:bg-white'
+                }`}
+              >
+                <Icon className={`w-5 h-5 ${isActive ? 'text-white' : 'text-gray-500'}`} />
+                <span>{tab.label}</span>
+              </button>
+            );
+          })}
+        </nav>
+      </div>
+      
+      {/* Contenu de l'onglet actif en cellules séparées */}
+      <div className="mb-8">
+        {renderTabContent()}
       </div>
 
       {/* Instructions d'utilisation */}
-      <div className="mt-8 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-6 border border-blue-200">
+      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-6 border border-blue-200">
         <div className="flex items-start space-x-4">
           <div className="bg-blue-600 rounded-full p-2 flex-shrink-0">
             <Edit3 className="w-5 h-5 text-white" />
