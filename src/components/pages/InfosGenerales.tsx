@@ -356,20 +356,13 @@ const InfosGenerales: React.FC = () => {
 
   return (
     <div className="p-8">
-      {/* Bannière bleue avec abeille et titre */}
+      {/* Bannière bleue avec titre UNIQUEMENT */}
       <div className="bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800 rounded-2xl p-8 mb-8 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-blue-600/20 to-transparent"></div>
         
         <div className="relative z-10 flex items-center justify-between">
-          {/* Zone gauche avec abeille */}
+          {/* Zone gauche avec titre seulement */}
           <div className="flex items-center space-x-6">
-            <div className="w-20 h-20 flex items-center justify-center">
-              <img 
-                src="/bee-mascot-violet.png" 
-                alt="Beezia Mascot" 
-                className="w-16 h-16 object-contain drop-shadow-lg"
-              />
-            </div>
             <div>
               <h1 className="text-4xl font-bold text-white mb-2">Infos Générales</h1>
               <p className="text-blue-100 text-lg">Informations de base sur votre entreprise</p>
@@ -385,12 +378,12 @@ const InfosGenerales: React.FC = () => {
           </div>
         </div>
 
-        {/* Abeille espion à gauche, collée au bas de la zone bleue */}
+        {/* Abeille espion AGRANDIE à gauche, collée au bas de la zone bleue */}
         <div className="absolute -bottom-2 left-8 z-20">
           <img 
             src="/abaille_beezia.png" 
             alt="Abeille Espion" 
-            className="w-16 h-16 object-contain drop-shadow-xl transform hover:scale-110 transition-transform duration-300 cursor-pointer"
+            className="w-20 h-20 object-contain drop-shadow-xl transform hover:scale-110 transition-transform duration-300 cursor-pointer"
             title="L'abeille vous observe... 👀"
           />
         </div>
