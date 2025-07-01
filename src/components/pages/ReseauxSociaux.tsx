@@ -1,17 +1,19 @@
 import React, { useState } from 'react';
-import { Share2, Plus, ExternalLink, Users, Calendar, Edit3, TrendingUp, Settings, Link } from 'lucide-react';
+import { Share2, Plus, ExternalLink, Users, Calendar, Edit3, TrendingUp, Settings, Link, Target, MessageCircle, Clock, BarChart3 } from 'lucide-react';
 import { FaFacebook, FaLinkedin, FaInstagram, FaTwitter, FaYoutube, FaTiktok, FaPinterest } from 'react-icons/fa';
 
 interface EditableFieldProps {
   value: string;
   onSave: (newValue: string) => void;
   placeholder?: string;
+  multiline?: boolean;
 }
 
 const EditableField: React.FC<EditableFieldProps> = ({ 
   value, 
   onSave, 
-  placeholder = "Cliquez pour modifier..."
+  placeholder = "Cliquez pour modifier...",
+  multiline = false
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editValue, setEditValue] = useState(value);
@@ -27,7 +29,7 @@ const EditableField: React.FC<EditableFieldProps> = ({
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
+    if (e.key === 'Enter' && !multiline) {
       e.preventDefault();
       handleSave();
     }
@@ -38,16 +40,31 @@ const EditableField: React.FC<EditableFieldProps> = ({
 
   if (isEditing) {
     return (
-      <input
-        type="text"
-        value={editValue}
-        onChange={(e) => setEditValue(e.target.value)}
-        onKeyDown={handleKeyDown}
-        onBlur={handleSave}
-        className="w-full p-2 border-2 border-blue-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 font-medium"
-        placeholder={placeholder}
-        autoFocus
-      />
+      <div className="relative">
+        {multiline ? (
+          <textarea
+            value={editValue}
+            onChange={(e) => setEditValue(e.target.value)}
+            onKeyDown={handleKeyDown}
+            onBlur={handleSave}
+            className="w-full p-3 border-2 border-blue-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 resize-none"
+            placeholder={placeholder}
+            rows={4}
+            autoFocus
+          />
+        ) : (
+          <input
+            type="text"
+            value={editValue}
+            onChange={(e) => setEditValue(e.target.value)}
+            onKeyDown={handleKeyDown}
+            onBlur={handleSave}
+            className="w-full p-3 border-2 border-blue-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 font-medium"
+            placeholder={placeholder}
+            autoFocus
+          />
+        )}
+      </div>
     );
   }
 
@@ -56,10 +73,10 @@ const EditableField: React.FC<EditableFieldProps> = ({
       className="group relative cursor-pointer"
       onClick={() => setIsEditing(true)}
     >
-      <div className="flex items-center justify-between">
+      <div className="flex items-start justify-between">
         <div className="flex-1">
           {value ? (
-            <div className="text-gray-900 font-medium hover:text-blue-600 transition-colors">
+            <div className={`text-gray-900 ${multiline ? 'leading-relaxed' : 'font-medium'} hover:text-blue-600 transition-colors`}>
               {value}
             </div>
           ) : (
@@ -132,7 +149,9 @@ const ReseauxSociaux: React.FC = () => {
     objectifs: 'Augmenter la visibilité de l\'expertise technique et attirer de nouveaux clients',
     cibleAudience: 'PME, startups, entrepreneurs cherchant des solutions digitales',
     tonalite: 'Professionnel mais accessible, expertise technique vulgarisée',
-    frequenceGlobale: '14 posts par semaine tous réseaux confondus'
+    frequenceGlobale: '14 posts par semaine tous réseaux confondus',
+    themesContenu: 'Développement web, conseils tech, success stories clients, veille technologique',
+    kpis: 'Croissance followers +15%/mois, engagement rate >5%, leads qualifiés +20%'
   });
 
   // États pour les statistiques
@@ -368,70 +387,158 @@ const ReseauxSociaux: React.FC = () => {
 
       case 'Stratégie':
         return (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Objectifs</h3>
-              <textarea
-                value={strategieData.objectifs}
-                onChange={(e) => updateStrategie('objectifs', e.target.value)}
-                placeholder="Quels sont vos objectifs sur les réseaux sociaux ?"
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
-                rows={4}
-              />
+          <div className="space-y-8">
+            {/* Section principale avec cartes organisées */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Objectifs */}
+              <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                <div className="flex items-center space-x-3 mb-4">
+                  <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center">
+                    <Target className="w-5 h-5 text-blue-600" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-gray-900">Objectifs</h3>
+                </div>
+                <EditableField
+                  value={strategieData.objectifs}
+                  onSave={(value) => updateStrategie('objectifs', value)}
+                  placeholder="Quels sont vos objectifs sur les réseaux sociaux ?"
+                  multiline={true}
+                />
+              </div>
+              
+              {/* Audience cible */}
+              <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                <div className="flex items-center space-x-3 mb-4">
+                  <div className="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center">
+                    <Users className="w-5 h-5 text-green-600" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-gray-900">Audience cible</h3>
+                </div>
+                <EditableField
+                  value={strategieData.cibleAudience}
+                  onSave={(value) => updateStrategie('cibleAudience', value)}
+                  placeholder="Qui voulez-vous atteindre ?"
+                  multiline={true}
+                />
+              </div>
+              
+              {/* Tonalité */}
+              <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                <div className="flex items-center space-x-3 mb-4">
+                  <div className="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center">
+                    <MessageCircle className="w-5 h-5 text-purple-600" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-gray-900">Tonalité</h3>
+                </div>
+                <EditableField
+                  value={strategieData.tonalite}
+                  onSave={(value) => updateStrategie('tonalite', value)}
+                  placeholder="Quel ton adopter dans vos communications ?"
+                  multiline={true}
+                />
+              </div>
+              
+              {/* Fréquence globale */}
+              <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                <div className="flex items-center space-x-3 mb-4">
+                  <div className="w-10 h-10 bg-orange-100 rounded-xl flex items-center justify-center">
+                    <Clock className="w-5 h-5 text-orange-600" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-gray-900">Fréquence globale</h3>
+                </div>
+                <EditableField
+                  value={strategieData.frequenceGlobale}
+                  onSave={(value) => updateStrategie('frequenceGlobale', value)}
+                  placeholder="Combien de posts par semaine au total ?"
+                  multiline={true}
+                />
+              </div>
+              
+              {/* Thèmes de contenu */}
+              <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                <div className="flex items-center space-x-3 mb-4">
+                  <div className="w-10 h-10 bg-indigo-100 rounded-xl flex items-center justify-center">
+                    <Edit3 className="w-5 h-5 text-indigo-600" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-gray-900">Thèmes de contenu</h3>
+                </div>
+                <EditableField
+                  value={strategieData.themesContenu}
+                  onSave={(value) => updateStrategie('themesContenu', value)}
+                  placeholder="Quels sujets aborder dans vos publications ?"
+                  multiline={true}
+                />
+              </div>
+              
+              {/* KPIs */}
+              <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                <div className="flex items-center space-x-3 mb-4">
+                  <div className="w-10 h-10 bg-red-100 rounded-xl flex items-center justify-center">
+                    <BarChart3 className="w-5 h-5 text-red-600" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-gray-900">KPIs & Objectifs mesurables</h3>
+                </div>
+                <EditableField
+                  value={strategieData.kpis}
+                  onSave={(value) => updateStrategie('kpis', value)}
+                  placeholder="Quels indicateurs suivre pour mesurer le succès ?"
+                  multiline={true}
+                />
+              </div>
             </div>
             
-            <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Audience cible</h3>
-              <textarea
-                value={strategieData.cibleAudience}
-                onChange={(e) => updateStrategie('cibleAudience', e.target.value)}
-                placeholder="Qui voulez-vous atteindre ?"
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
-                rows={4}
-              />
-            </div>
-            
-            <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Tonalité</h3>
-              <textarea
-                value={strategieData.tonalite}
-                onChange={(e) => updateStrategie('tonalite', e.target.value)}
-                placeholder="Quel ton adopter dans vos communications ?"
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
-                rows={4}
-              />
-            </div>
-            
-            <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Fréquence globale</h3>
-              <textarea
-                value={strategieData.frequenceGlobale}
-                onChange={(e) => updateStrategie('frequenceGlobale', e.target.value)}
-                placeholder="Combien de posts par semaine au total ?"
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
-                rows={4}
-              />
-            </div>
-            
-            {/* Répartition par réseau */}
-            <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl p-6 border border-blue-200 lg:col-span-2">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Répartition par réseau</h3>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {/* Répartition par réseau - Section élargie */}
+            <div className="bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 rounded-2xl p-8 border border-blue-200">
+              <div className="flex items-center space-x-3 mb-6">
+                <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-purple-600 rounded-xl flex items-center justify-center">
+                  <Share2 className="w-6 h-6 text-white" />
+                </div>
+                <h3 className="text-xl font-semibold text-gray-900">Répartition par réseau</h3>
+              </div>
+              
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                 {reseauxData
                   .filter(reseau => reseau.actif)
                   .map((reseau, index) => (
-                  <div key={reseau.id} className="text-center p-4 bg-white rounded-xl border border-gray-200">
+                  <div key={reseau.id} className="bg-white rounded-xl p-6 border border-gray-200 shadow-sm hover:shadow-md transition-all duration-200 text-center">
                     <div 
-                      className="w-12 h-12 rounded-xl flex items-center justify-center mx-auto mb-2"
+                      className="w-16 h-16 rounded-xl flex items-center justify-center mx-auto mb-4"
                       style={{ backgroundColor: getPlatformColor(reseau.plateforme) }}
                     >
                       {getPlatformIcon(reseau.plateforme)}
                     </div>
-                    <div className="text-sm font-medium text-gray-700">{reseau.plateforme}</div>
-                    <div className="text-2xl font-bold text-gray-900">{reseau.postsParSemaine}</div>
-                    <div className="text-xs text-gray-500">posts/semaine</div>
+                    <div className="text-lg font-semibold text-gray-900 mb-1">{reseau.plateforme}</div>
+                    <div className="text-3xl font-bold text-gray-900 mb-1">{reseau.postsParSemaine}</div>
+                    <div className="text-sm text-gray-600">posts/semaine</div>
+                    <div className="mt-3 text-xs text-gray-500">
+                      {reseau.followers.toLocaleString()} followers
+                    </div>
                   </div>
                 ))}
+              </div>
+              
+              {/* Résumé global */}
+              <div className="mt-6 pt-6 border-t border-gray-200">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="bg-white rounded-xl p-4 text-center border border-gray-200">
+                    <div className="text-2xl font-bold text-blue-600">
+                      {reseauxData.filter(r => r.actif).reduce((sum, r) => sum + r.postsParSemaine, 0)}
+                    </div>
+                    <div className="text-sm text-gray-600">Posts total/semaine</div>
+                  </div>
+                  <div className="bg-white rounded-xl p-4 text-center border border-gray-200">
+                    <div className="text-2xl font-bold text-green-600">
+                      {reseauxData.filter(r => r.actif).length}
+                    </div>
+                    <div className="text-sm text-gray-600">Réseaux actifs</div>
+                  </div>
+                  <div className="bg-white rounded-xl p-4 text-center border border-gray-200">
+                    <div className="text-2xl font-bold text-purple-600">
+                      {reseauxData.reduce((sum, r) => sum + r.followers, 0).toLocaleString()}
+                    </div>
+                    <div className="text-sm text-gray-600">Audience totale</div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
