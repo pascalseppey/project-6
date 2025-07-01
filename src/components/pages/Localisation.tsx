@@ -184,14 +184,35 @@ const Localisation: React.FC = () => {
           prenom: 'Sophie',
           date: '2024-12-15',
           note: 5,
-          commentaire: 'Excellent service, très professionnel et à l\'écoute de nos besoins.'
+          commentaire: 'Excellent service, très professionnel et à l\'écoute de nos besoins. Je recommande vivement cette agence pour tous vos projets digitaux.'
         },
         {
           nom: 'Dubois',
           prenom: 'Pierre',
           date: '2024-12-10',
           note: 4,
-          commentaire: 'Très satisfait du site web créé pour notre entreprise.'
+          commentaire: 'Très satisfait du site web créé pour notre entreprise. Équipe compétente et délais respectés.'
+        },
+        {
+          nom: 'Leroy',
+          prenom: 'Marie',
+          date: '2024-12-05',
+          note: 5,
+          commentaire: 'Service impeccable ! Notre visibilité en ligne a considérablement augmenté grâce à leur expertise.'
+        },
+        {
+          nom: 'Bernard',
+          prenom: 'Jean',
+          date: '2024-11-28',
+          note: 4,
+          commentaire: 'Bon travail sur notre stratégie SEO. Les résultats sont au rendez-vous.'
+        },
+        {
+          nom: 'Moreau',
+          prenom: 'Claire',
+          date: '2024-11-20',
+          note: 5,
+          commentaire: 'Accompagnement personnalisé et solutions innovantes. Parfait pour notre transformation digitale.'
         }
       ],
       horaires: [
@@ -324,10 +345,15 @@ const Localisation: React.FC = () => {
     setFichesList(updatedFiches);
   };
 
-  const supprimerAvis = (index: number) => {
-    const updatedFiches = [...fichesList];
-    updatedFiches[activeFiche].avis = updatedFiches[activeFiche].avis.filter((_, i) => i !== index);
-    setFichesList(updatedFiches);
+  // Calcul du score global et nombre d'avis
+  const calculerScoreGlobal = () => {
+    const avis = fichesList[activeFiche]?.avis || [];
+    if (avis.length === 0) return { moyenne: 0, total: 0 };
+    
+    const somme = avis.reduce((acc, avis) => acc + avis.note, 0);
+    const moyenne = somme / avis.length;
+    
+    return { moyenne: Math.round(moyenne * 10) / 10, total: avis.length };
   };
 
   const renderTabContent = () => {
@@ -428,30 +454,75 @@ const Localisation: React.FC = () => {
         );
 
       case 'Avis':
+        const { moyenne, total } = calculerScoreGlobal();
+        
         return (
           <div className="space-y-6">
-            <div className="flex justify-between items-center">
-              <h3 className="text-xl font-semibold text-gray-900">Avis clients</h3>
-              <button
-                onClick={ajouterAvis}
-                className="flex items-center space-x-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
-              >
-                <Plus className="w-4 h-4" />
-                <span>Ajouter un avis</span>
-              </button>
+            {/* Score global en haut */}
+            <div className="bg-gradient-to-r from-yellow-50 to-orange-50 rounded-2xl p-8 border border-yellow-200">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-6">
+                  <div className="text-center">
+                    <div className="text-5xl font-bold text-yellow-600 mb-2">{moyenne.toFixed(1)}</div>
+                    <div className="flex items-center justify-center space-x-1 mb-2">
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <Star 
+                          key={star} 
+                          className={`w-6 h-6 ${star <= Math.round(moyenne) ? 'text-yellow-500 fill-current' : 'text-gray-300'}`} 
+                        />
+                      ))}
+                    </div>
+                    <div className="text-gray-600 font-medium">Score global</div>
+                  </div>
+                  
+                  <div className="h-16 w-px bg-gray-300"></div>
+                  
+                  <div className="text-center">
+                    <div className="text-5xl font-bold text-blue-600 mb-2">{total}</div>
+                    <div className="text-gray-600 font-medium">Avis client{total > 1 ? 's' : ''}</div>
+                  </div>
+                </div>
+                
+                <button
+                  onClick={ajouterAvis}
+                  className="flex items-center space-x-2 bg-blue-600 text-white px-6 py-3 rounded-xl hover:bg-blue-700 transition-colors font-semibold"
+                >
+                  <Plus className="w-5 h-5" />
+                  <span>Ajouter un avis</span>
+                </button>
+              </div>
             </div>
             
+            {/* Liste des avis */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {ficheActive.avis.map((avis, index) => (
-                <div key={index} className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm">
+                <div key={index} className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                   <div className="flex justify-between items-start mb-4">
-                    <h4 className="text-lg font-semibold text-gray-900">Avis {index + 1}</h4>
-                    <button
-                      onClick={() => supprimerAvis(index)}
-                      className="text-red-500 hover:text-red-700 transition-colors"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
+                    <div className="flex items-center space-x-3">
+                      <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+                        <span className="text-white font-bold text-sm">
+                          {avis.prenom.charAt(0)}{avis.nom.charAt(0)}
+                        </span>
+                      </div>
+                      <div>
+                        <h4 className="text-lg font-semibold text-gray-900">
+                          {avis.prenom} {avis.nom}
+                        </h4>
+                        <div className="flex items-center space-x-2">
+                          <div className="flex items-center space-x-1">
+                            {[1, 2, 3, 4, 5].map((star) => (
+                              <Star 
+                                key={star} 
+                                className={`w-4 h-4 ${star <= avis.note ? 'text-yellow-500 fill-current' : 'text-gray-300'}`} 
+                              />
+                            ))}
+                          </div>
+                          <span className="text-sm text-gray-500">
+                            {new Date(avis.date).toLocaleDateString('fr-FR')}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                   
                   <div className="grid grid-cols-2 gap-4 mb-4">
@@ -701,16 +772,15 @@ const Localisation: React.FC = () => {
         </div>
       </div>
 
-      {/* Menu horizontal des onglets */}
+      {/* Menu horizontal des onglets - Répartition équilibrée */}
       <div className="mb-8 relative">
         <nav className="flex bg-gray-100 p-1 rounded-xl" aria-label="Tabs">
           {tabs.map((tab, index) => {
             const Icon = tab.icon;
             const isActive = activeTab === tab.id;
-            const isLast = index === tabs.length - 1;
             
             return (
-              <div key={tab.id} className={`relative ${isLast ? 'ml-auto' : 'mr-2'}`}>
+              <div key={tab.id} className="flex-1 relative">
                 {/* Icône d'information pour Jours fériés */}
                 {tab.id === 'Jours fériés' && (
                   <div className="absolute -top-6 right-2 group">
@@ -734,7 +804,7 @@ const Localisation: React.FC = () => {
                 
                 <button
                   onClick={() => setActiveTab(tab.id)}
-                  className={`flex items-center space-x-3 px-8 py-4 text-sm font-medium rounded-lg transition-all duration-200 ${
+                  className={`w-full flex items-center justify-center space-x-3 px-4 py-4 text-sm font-medium rounded-lg transition-all duration-200 ${
                     isActive
                       ? 'bg-gradient-to-r from-blue-600 via-blue-700 to-blue-800 text-white shadow-lg'
                       : 'text-gray-700 hover:text-gray-900 hover:bg-white'
