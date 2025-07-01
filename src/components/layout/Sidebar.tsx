@@ -1,5 +1,5 @@
 import React from 'react';
-import { Home, MapPin, Palette, Share2, Users, MessageSquare, CheckSquare, Calendar, Globe, Megaphone, FileText, Search, BarChart3, Sigma as Sitemap, Key, Type, Settings, HelpCircle, LogOut, Bot, ChevronRight, Zap } from 'lucide-react';
+import { Home, MapPin, Palette, Share2, Users, MessageSquare, CheckSquare, Calendar, Globe, Megaphone, FileText, Search, BarChart3, Sigma as Sitemap, Type, Settings, HelpCircle, LogOut, Bot, ChevronRight, Zap } from 'lucide-react';
 
 interface SidebarProps {
   activeTab: string;
@@ -41,7 +41,6 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => {
         { name: 'Analyse SEO', icon: Search, active: false },
         { name: 'Google Analytics', icon: BarChart3, active: false },
         { name: 'Plan de site', icon: Sitemap, active: false },
-        { name: 'Mots-clés', icon: Key, active: false },
         { name: 'Texte SEO', icon: Type, active: false },
         { name: 'WordPress', icon: Settings, active: false },
         { name: 'Domaine & Hébergement', icon: Globe, active: false },

@@ -7,6 +7,9 @@ import Localisation from './pages/Localisation';
 import DesignBranding from './pages/DesignBranding';
 import ReseauxSociaux from './pages/ReseauxSociaux';
 import Concurrents from './pages/Concurrents';
+import PlanDeSite from './pages/PlanDeSite';
+import TexteSEO from './pages/TexteSEO';
+import AnalyseSEO from './pages/AnalyseSEO';
 
 const Dashboard = () => {
   const [activeTab, setActiveTab] = useState('Dashboard');
@@ -95,6 +98,12 @@ const Dashboard = () => {
         return <ReseauxSociaux />;
       case 'Concurrents':
         return <Concurrents />;
+      case 'Plan de site':
+        return <PlanDeSite />;
+      case 'Texte SEO':
+        return <TexteSEO />;
+      case 'Analyse SEO':
+        return <AnalyseSEO />;
       case 'Dashboard':
       case "Let's Fight !":
       default:
