@@ -356,9 +356,9 @@ const Dashboard = () => {
             <div className="lg:col-span-5 flex flex-col items-center justify-center">
               <div className="w-72 h-72 mb-4 relative">
                 <img 
-                  src="https://images.pexels.com/photos/1409999/pexels-photo-1409999.jpeg?auto=compress&cs=tinysrgb&w=300&h=300&fit=crop" 
+                  src="/bee-mascot-violet copy.png" 
                   alt="Beezia Mascot" 
-                  className="w-full h-full object-contain drop-shadow-2xl rounded-full"
+                  className="w-full h-full object-contain drop-shadow-2xl"
                 />
               </div>
               <h3 className="text-white text-3xl font-bold mb-2">Let's Fight !</h3>
