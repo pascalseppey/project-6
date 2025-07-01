@@ -2,7 +2,6 @@ import { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from './';
 import { setAvailableClients, setLastActiveClient, addClient } from '../store/slices/clientsSlice';
 import { setCurrentClient, setLoading, setError, clearCurrentClient } from '../store/slices/currentClientSlice';
-import { addNotification } from '../store/slices/uiSlice';
 import type { ClientData, ClientMetadata } from '../store/slices/currentClientSlice';
 
 export const useClientManager = () => {
@@ -82,18 +81,11 @@ export const useClientManager = () => {
       dispatch(setLastActiveClient(clientId));
       localStorage.setItem('beezia-last-active-client', clientId);
       
-      dispatch(addNotification({
-        type: 'success',
-        message: `Client "${clientData.metadata.nom}" chargé avec succès`
-      }));
+      console.log('✅ Client chargé:', clientData.metadata.nom);
       
     } catch (error) {
       console.error('Erreur chargement client:', error);
       dispatch(setError('Erreur lors du chargement du client'));
-      dispatch(addNotification({
-        type: 'error',
-        message: 'Erreur lors du chargement du client'
-      }));
     } finally {
       dispatch(setLoading(false));
     }
@@ -114,10 +106,7 @@ export const useClientManager = () => {
       // Charger le nouveau client
       await loadClient(clientId);
       
-      dispatch(addNotification({
-        type: 'success',
-        message: `Nouveau client "${nom}" créé avec succès`
-      }));
+      console.log('✅ Nouveau client créé:', nom);
       
       return clientId;
       

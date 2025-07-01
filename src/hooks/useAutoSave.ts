@@ -2,7 +2,6 @@ import { useEffect, useRef } from 'react';
 import { debounce } from 'lodash';
 import { useAppSelector, useAppDispatch } from './';
 import { setSaving, setSaved, setError } from '../store/slices/currentClientSlice';
-import { addNotification } from '../store/slices/uiSlice';
 
 export const useAutoSave = () => {
   const dispatch = useAppDispatch();
@@ -28,20 +27,12 @@ export const useAutoSave = () => {
         localStorage.setItem(`beezia-client-${clientData.id}`, JSON.stringify(clientData));
         
         dispatch(setSaved());
-        dispatch(addNotification({
-          type: 'success',
-          message: `Client "${clientData.metadata.nom}" sauvegardé automatiquement`
-        }));
         
         console.log('✅ Client sauvegardé automatiquement:', clientData.metadata.nom);
         
       } catch (error) {
         console.error('❌ Erreur sauvegarde:', error);
         dispatch(setError('Erreur lors de la sauvegarde automatique'));
-        dispatch(addNotification({
-          type: 'error',
-          message: 'Erreur lors de la sauvegarde automatique'
-        }));
       } finally {
         savingRef.current = false;
         dispatch(setSaving(false));
