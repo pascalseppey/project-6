@@ -1,11 +1,16 @@
 import React from 'react';
-import { Search, Bell, Mail, ChevronDown } from 'lucide-react';
+import { Search, Bell, Mail, Wifi, WifiOff, Save, Clock } from 'lucide-react';
+import { useAppSelector } from '../../hooks';
+import ClientSelector from '../ClientSelector';
 
 interface HeaderProps {
   currentTime: Date;
 }
 
 const Header: React.FC<HeaderProps> = ({ currentTime }) => {
+  const { hasUnsavedChanges, isSaving, lastSaved } = useAppSelector(state => state.currentClient);
+  const { isOnline } = useAppSelector(state => state.ui);
+  
   const formatDate = (date: Date) => {
     return date.toLocaleDateString('fr-FR', {
       day: '2-digit',
@@ -21,14 +26,60 @@ const Header: React.FC<HeaderProps> = ({ currentTime }) => {
       second: '2-digit'
     });
   };
+  
+  const formatLastSaved = (timestamp: string) => {
+    const date = new Date(timestamp);
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+    
+    if (diffMins < 1) return 'À l\'instant';
+    if (diffMins < 60) return `Il y a ${diffMins} min`;
+    if (diffMins < 1440) return `Il y a ${Math.floor(diffMins / 60)}h`;
+    return date.toLocaleDateString('fr-FR');
+  };
 
   return (
     <div className="bg-white border-b border-gray-200 px-8 py-4">
       <div className="flex items-center justify-between">
-        {/* Date et Heure */}
+        {/* Date et Heure + Statut de connexion */}
         <div className="flex items-center space-x-4 text-sm text-gray-600">
           <span className="font-medium">{formatDate(currentTime)}</span>
           <span className="font-mono">{formatTime(currentTime)}</span>
+          
+          {/* Indicateur de connexion */}
+          <div className="flex items-center space-x-1">
+            {isOnline ? (
+              <Wifi className="w-4 h-4 text-green-600" />
+            ) : (
+              <WifiOff className="w-4 h-4 text-red-600" />
+            )}
+            <span className={`text-xs ${isOnline ? 'text-green-600' : 'text-red-600'}`}>
+              {isOnline ? 'En ligne' : 'Hors ligne'}
+            </span>
+          </div>
+          
+          {/* Statut de sauvegarde */}
+          <div className="flex items-center space-x-1">
+            {isSaving ? (
+              <>
+                <Save className="w-4 h-4 text-blue-600 animate-pulse" />
+                <span className="text-xs text-blue-600">Sauvegarde...</span>
+              </>
+            ) : hasUnsavedChanges ? (
+              <>
+                <Clock className="w-4 h-4 text-yellow-600" />
+                <span className="text-xs text-yellow-600">Non sauvegardé</span>
+              </>
+            ) : lastSaved ? (
+              <>
+                <Save className="w-4 h-4 text-green-600" />
+                <span className="text-xs text-green-600">
+                  Sauvegardé {formatLastSaved(lastSaved)}
+                </span>
+              </>
+            ) : null}
+          </div>
         </div>
 
         {/* Zone centrale avec recherche élargie */}
@@ -37,27 +88,16 @@ const Header: React.FC<HeaderProps> = ({ currentTime }) => {
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
             <input
               type="text"
-              placeholder="Cherchez vos sites web..."
+              placeholder="Cherchez dans vos données client..."
               className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
         </div>
 
-        {/* Zone droite avec profil */}
+        {/* Zone droite avec sélecteur de client et notifications */}
         <div className="flex items-center space-x-4">
-          {/* Menu déroulant compte Charly Gaillard */}
-          <div className="relative">
-            <button className="flex items-center space-x-3 bg-gray-50 rounded-lg px-4 py-2 hover:bg-gray-100 transition-colors">
-              <div className="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center">
-                <span className="text-white font-bold text-sm">C</span>
-              </div>
-              <div className="text-left">
-                <div className="text-sm font-medium text-gray-900">Charly Gaillard</div>
-                <div className="text-xs text-gray-500">charlygaillard.ch</div>
-              </div>
-              <ChevronDown className="w-4 h-4 text-gray-400" />
-            </button>
-          </div>
+          {/* Sélecteur de client */}
+          <ClientSelector />
 
           {/* Notifications */}
           <div className="relative">
