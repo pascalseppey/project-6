@@ -96,7 +96,7 @@ const EditableField: React.FC<EditableFieldProps> = ({
           {value ? (
             <div className={`text-gray-900 ${
               isTitle 
-                ? 'text-2xl font-bold' 
+                ? 'text-xl font-bold' 
                 : multiline 
                   ? 'text-base leading-relaxed' 
                   : 'text-base'
@@ -105,7 +105,7 @@ const EditableField: React.FC<EditableFieldProps> = ({
             </div>
           ) : (
             <div className={`text-gray-400 italic ${
-              isTitle ? 'text-2xl' : 'text-base'
+              isTitle ? 'text-xl' : 'text-base'
             }`}>
               {placeholder}
             </div>
@@ -165,9 +165,9 @@ const Concurrents: React.FC = () => {
       concurrents: [
         {
           id: '1',
-          nom: 'WebAgency Pro',
-          siteWeb: 'https://webagency-pro.ch',
-          description: 'Agence spécialisée dans le développement web sur mesure',
+          nom: 'WebDesign Pro SA',
+          siteWeb: 'https://webdesignpro.ch',
+          description: 'Leader local avec forte présence GMB',
           scores: { qualite: 8, prix: 6, delais: 7, service: 9, innovation: 8, reputation: 9, portfolio: 8, communication: 7 },
           scoreTotal: 0,
           classement: 0
@@ -360,21 +360,12 @@ const Concurrents: React.FC = () => {
     ));
   };
 
-  const getClassementColor = (classement: number) => {
+  const getClassementText = (classement: number) => {
     switch (classement) {
-      case 1: return 'bg-gradient-to-r from-yellow-400 to-yellow-500 text-yellow-900';
-      case 2: return 'bg-gradient-to-r from-gray-300 to-gray-400 text-gray-900';
-      case 3: return 'bg-gradient-to-r from-orange-400 to-orange-500 text-orange-900';
-      default: return 'bg-gradient-to-r from-blue-400 to-blue-500 text-blue-900';
-    }
-  };
-
-  const getClassementIcon = (classement: number) => {
-    switch (classement) {
-      case 1: return '🥇';
-      case 2: return '🥈';
-      case 3: return '🥉';
-      default: return `${classement}`;
+      case 1: return '1er';
+      case 2: return '2ème';
+      case 3: return '3ème';
+      default: return `${classement}ème`;
     }
   };
 
@@ -384,147 +375,159 @@ const Concurrents: React.FC = () => {
     if (!prestationActive) return null;
 
     return (
-      <div className="space-y-8">
-        {/* Description de la prestation */}
-        <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl p-6 border border-blue-200">
-          <h3 className="text-xl font-semibold text-gray-900 mb-4">{prestationActive.nom}</h3>
-          <p className="text-gray-700 text-lg leading-relaxed">{prestationActive.description}</p>
-          <div className="mt-4 flex items-center justify-between">
-            <div className="text-sm text-gray-600">
-              <strong>{prestationActive.concurrents.length}</strong> concurrent{prestationActive.concurrents.length > 1 ? 's' : ''} analysé{prestationActive.concurrents.length > 1 ? 's' : ''}
-            </div>
-            <button
-              onClick={ajouterConcurrent}
-              className="flex items-center space-x-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
-            >
-              <Plus className="w-4 h-4" />
-              <span>Ajouter un concurrent</span>
-            </button>
+      <div className="space-y-6">
+        {/* En-tête avec bouton d'ajout */}
+        <div className="flex justify-between items-center">
+          <div>
+            <h3 className="text-2xl font-bold text-gray-900">{prestationActive.nom}</h3>
+            <p className="text-gray-600 mt-1">{prestationActive.description}</p>
           </div>
+          <button
+            onClick={ajouterConcurrent}
+            className="flex items-center space-x-2 bg-blue-600 text-white px-6 py-3 rounded-xl hover:bg-blue-700 transition-colors font-semibold"
+          >
+            <Plus className="w-5 h-5" />
+            <span>Ajouter un concurrent</span>
+          </button>
         </div>
 
-        {/* Tableau de classement */}
-        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
-          <div className="bg-gradient-to-r from-gray-50 to-gray-100 px-6 py-4 border-b border-gray-200">
-            <h3 className="text-lg font-semibold text-gray-900 flex items-center space-x-2">
-              <Trophy className="w-5 h-5 text-yellow-600" />
-              <span>Classement des concurrents</span>
-            </h3>
-          </div>
+        {/* Liste des concurrents avec design graphique */}
+        <div className="space-y-6">
+          {prestationActive.concurrents
+            .sort((a, b) => b.scoreTotal - a.scoreTotal)
+            .map((concurrent, index) => (
+            <div key={concurrent.id} className="bg-white rounded-2xl p-8 shadow-sm border border-gray-200">
+              {/* En-tête du concurrent */}
+              <div className="flex items-start justify-between mb-6">
+                <div className="flex items-center space-x-6">
+                  {/* Badge de classement */}
+                  <div className="flex flex-col items-center">
+                    <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold text-lg">
+                      {getClassementText(index + 1)}
+                    </div>
+                    <div className="text-sm text-gray-500 mt-2">
+                      {Object.values(concurrent.scores).reduce((sum, score) => sum + score, 0)}%
+                    </div>
+                  </div>
+                  
+                  {/* Informations du concurrent */}
+                  <div className="flex-1">
+                    <div className="mb-2">
+                      <EditableField
+                        value={concurrent.nom}
+                        onSave={(value) => updateConcurrent(concurrent.id, 'nom', value)}
+                        placeholder="Nom du concurrent"
+                        isTitle={true}
+                      />
+                    </div>
+                    <div className="mb-2">
+                      <EditableField
+                        value={concurrent.siteWeb}
+                        onSave={(value) => updateConcurrent(concurrent.id, 'siteWeb', value)}
+                        placeholder="Site web"
+                      />
+                    </div>
+                    <div>
+                      <EditableField
+                        value={concurrent.description}
+                        onSave={(value) => updateConcurrent(concurrent.id, 'description', value)}
+                        placeholder="Description"
+                      />
+                    </div>
+                  </div>
+                </div>
 
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900 w-16">Rang</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900 min-w-48">Concurrent</th>
-                  {criteres.map(critere => {
-                    const Icon = critere.icon;
-                    return (
-                      <th key={critere.key} className="px-3 py-4 text-center text-sm font-semibold text-gray-900 min-w-20">
-                        <div className="flex flex-col items-center space-y-1">
-                          <Icon className={`w-4 h-4 ${critere.couleur}`} />
-                          <span className="text-xs">{critere.nom}</span>
-                        </div>
-                      </th>
-                    );
-                  })}
-                  <th className="px-6 py-4 text-center text-sm font-semibold text-gray-900 w-24">Total</th>
-                  <th className="px-6 py-4 text-center text-sm font-semibold text-gray-900 w-20">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200">
-                {prestationActive.concurrents
-                  .sort((a, b) => b.scoreTotal - a.scoreTotal)
-                  .map((concurrent, index) => (
-                  <tr key={concurrent.id} className="hover:bg-gray-50 transition-colors">
-                    {/* Classement */}
-                    <td className="px-6 py-4">
-                      <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold ${getClassementColor(index + 1)}`}>
-                        {getClassementIcon(index + 1)}
+                {/* Actions */}
+                <div className="flex items-center space-x-3">
+                  {concurrent.siteWeb && (
+                    <a
+                      href={concurrent.siteWeb}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="p-3 text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-xl transition-colors"
+                      title="Visiter le site"
+                    >
+                      <TrendingUp className="w-5 h-5" />
+                    </a>
+                  )}
+                  <button
+                    onClick={() => supprimerConcurrent(concurrent.id)}
+                    className="p-3 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-xl transition-colors"
+                    title="Supprimer"
+                  >
+                    <Trash2 className="w-5 h-5" />
+                  </button>
+                </div>
+              </div>
+
+              {/* Grille des critères avec barres de progression */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                {criteres.map(critere => {
+                  const Icon = critere.icon;
+                  const score = concurrent.scores[critere.key as keyof typeof concurrent.scores];
+                  const pourcentage = (score / 10) * 100;
+                  
+                  return (
+                    <div key={critere.key} className="space-y-3">
+                      {/* En-tête du critère */}
+                      <div className="flex items-center space-x-2">
+                        <Icon className={`w-4 h-4 ${critere.couleur}`} />
+                        <span className="text-sm font-medium text-gray-700">{critere.nom}</span>
                       </div>
-                    </td>
-
-                    {/* Informations du concurrent */}
-                    <td className="px-6 py-4">
+                      
+                      {/* Barre de progression */}
                       <div className="space-y-2">
-                        <EditableField
-                          value={concurrent.nom}
-                          onSave={(value) => updateConcurrent(concurrent.id, 'nom', value)}
-                          placeholder="Nom du concurrent"
-                          isTitle={true}
-                        />
-                        <EditableField
-                          value={concurrent.siteWeb}
-                          onSave={(value) => updateConcurrent(concurrent.id, 'siteWeb', value)}
-                          placeholder="Site web"
-                        />
-                        <EditableField
-                          value={concurrent.description}
-                          onSave={(value) => updateConcurrent(concurrent.id, 'description', value)}
-                          placeholder="Description"
-                          multiline={true}
-                        />
-                      </div>
-                    </td>
-
-                    {/* Scores par critère */}
-                    {criteres.map(critere => (
-                      <td key={critere.key} className="px-3 py-4 text-center">
-                        <select
-                          value={concurrent.scores[critere.key as keyof typeof concurrent.scores]}
-                          onChange={(e) => updateScore(concurrent.id, critere.key, parseInt(e.target.value))}
-                          className="w-16 p-1 border border-gray-300 rounded text-center focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        >
-                          {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(score => (
-                            <option key={score} value={score}>{score}</option>
-                          ))}
-                        </select>
-                      </td>
-                    ))}
-
-                    {/* Score total */}
-                    <td className="px-6 py-4 text-center">
-                      <div className="text-2xl font-bold text-gray-900">
-                        {Object.values(concurrent.scores).reduce((sum, score) => sum + score, 0)}
-                      </div>
-                      <div className="text-sm text-gray-500">/ 80</div>
-                    </td>
-
-                    {/* Actions */}
-                    <td className="px-6 py-4 text-center">
-                      <div className="flex items-center justify-center space-x-2">
-                        {concurrent.siteWeb && (
-                          <a
-                            href={concurrent.siteWeb}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="p-2 text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg transition-colors"
-                            title="Visiter le site"
+                        <div className="flex justify-between items-center">
+                          <span className="text-2xl font-bold text-gray-900">{pourcentage.toFixed(0)}%</span>
+                          <select
+                            value={score}
+                            onChange={(e) => updateScore(concurrent.id, critere.key, parseInt(e.target.value))}
+                            className="text-sm border border-gray-300 rounded px-2 py-1 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                           >
-                            <TrendingUp className="w-4 h-4" />
-                          </a>
-                        )}
-                        <button
-                          onClick={() => supprimerConcurrent(concurrent.id)}
-                          className="p-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors"
-                          title="Supprimer"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
+                            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(s => (
+                              <option key={s} value={s}>{s}</option>
+                            ))}
+                          </select>
+                        </div>
+                        
+                        {/* Barre de progression colorée */}
+                        <div className="w-full bg-gray-200 rounded-full h-2">
+                          <div 
+                            className={`h-2 rounded-full transition-all duration-300 ${
+                              pourcentage >= 85 ? 'bg-green-500' :
+                              pourcentage >= 70 ? 'bg-blue-500' :
+                              pourcentage >= 50 ? 'bg-yellow-500' :
+                              'bg-red-500'
+                            }`}
+                            style={{ width: `${pourcentage}%` }}
+                          ></div>
+                        </div>
                       </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Score global */}
+              <div className="mt-6 pt-6 border-t border-gray-200">
+                <div className="flex items-center justify-between">
+                  <span className="text-lg font-semibold text-gray-900">Score Global</span>
+                  <div className="flex items-center space-x-4">
+                    <div className="text-3xl font-bold text-blue-600">
+                      {Object.values(concurrent.scores).reduce((sum, score) => sum + score, 0)}%
+                    </div>
+                    <div className="text-sm text-gray-500">/ 80</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
 
-        {/* Analyse comparative */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Analyse comparative en bas */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-8">
           {/* Meilleurs par critère */}
-          <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm">
+          <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-200">
             <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center space-x-2">
               <Star className="w-5 h-5 text-yellow-600" />
               <span>Meilleurs par critère</span>
@@ -555,7 +558,7 @@ const Concurrents: React.FC = () => {
           </div>
 
           {/* Statistiques globales */}
-          <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm">
+          <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-200">
             <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center space-x-2">
               <TrendingUp className="w-5 h-5 text-blue-600" />
               <span>Analyse globale</span>
@@ -573,7 +576,7 @@ const Concurrents: React.FC = () => {
                     {prestationActive.concurrents.length > 0 
                       ? Math.round(prestationActive.concurrents.reduce((sum, c) => sum + c.scoreTotal, 0) / prestationActive.concurrents.length)
                       : 0
-                    }
+                    }%
                   </div>
                   <div className="text-sm text-gray-600">Score moyen</div>
                 </div>
@@ -590,7 +593,7 @@ const Concurrents: React.FC = () => {
                   <div className="flex justify-between items-center">
                     <span className="text-sm text-gray-600">Score le plus élevé</span>
                     <span className="font-semibold text-gray-900">
-                      {Math.max(...prestationActive.concurrents.map(c => c.scoreTotal))}/80
+                      {Math.max(...prestationActive.concurrents.map(c => c.scoreTotal))}%
                     </span>
                   </div>
                   <div className="flex justify-between items-center">
@@ -613,85 +616,87 @@ const Concurrents: React.FC = () => {
   };
 
   return (
-    <div className="p-8">
-      {/* Bannière bleue avec abeille emoji et titre */}
-      <div className="bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800 rounded-2xl p-8 mb-8 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-600/20 to-transparent"></div>
-        
-        <div className="relative z-10 flex items-center justify-between">
-          {/* Zone gauche avec abeille emoji et titre */}
-          <div className="flex items-center space-x-6">
-            {/* Abeille emoji qui vole à gauche du texte */}
-            <div className="text-6xl animate-bounce">
-              🐝
-            </div>
-            <div>
-              <h1 className="text-4xl font-bold text-white mb-2">Concurrents</h1>
-              <p className="text-blue-100 text-lg">Analyse comparative de vos concurrents par prestation</p>
-            </div>
-          </div>
+    <div className="min-h-screen bg-gray-50">
+      <div className="p-8">
+        {/* Bannière bleue avec abeille emoji et titre */}
+        <div className="bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800 rounded-2xl p-8 mb-8 relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-600/20 to-transparent"></div>
           
-          {/* Zone droite avec indicateur d'édition */}
-          <div className="flex items-center space-x-4">
-            <div className="bg-white/20 backdrop-blur-sm text-white px-6 py-3 rounded-xl border border-white/30 font-semibold flex items-center space-x-2">
-              <Edit3 className="w-4 h-4" />
-              <span>Mode édition activé</span>
+          <div className="relative z-10 flex items-center justify-between">
+            {/* Zone gauche avec abeille emoji et titre */}
+            <div className="flex items-center space-x-6">
+              {/* Abeille emoji qui vole à gauche du texte */}
+              <div className="text-6xl animate-bounce">
+                🐝
+              </div>
+              <div>
+                <h1 className="text-4xl font-bold text-white mb-2">Concurrents</h1>
+                <p className="text-blue-100 text-lg">Analyse comparative de vos concurrents par prestation</p>
+              </div>
+            </div>
+            
+            {/* Zone droite avec indicateur d'édition */}
+            <div className="flex items-center space-x-4">
+              <div className="bg-white/20 backdrop-blur-sm text-white px-6 py-3 rounded-xl border border-white/30 font-semibold flex items-center space-x-2">
+                <Edit3 className="w-4 h-4" />
+                <span>Mode édition activé</span>
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Menu horizontal des onglets par prestation */}
-      <div className="mb-8 relative">
-        <nav className="flex flex-wrap bg-gray-100 p-1 rounded-xl gap-1" aria-label="Tabs">
-          {tabs.map((tab, index) => {
-            const Icon = tab.icon;
-            const isActive = activeTab === tab.id;
-            const isLast = index === tabs.length - 1;
-            
-            return (
-              <div key={tab.id} className={`relative ${isLast ? 'ml-auto' : ''}`}>
-                {/* Icône d'information pour Maintenance & Support */}
-                {tab.id === 'Maintenance & Support' && (
-                  <div className="absolute -top-6 right-2 group">
-                    <Info 
-                      className="w-4 h-4 text-gray-400 hover:text-blue-600 cursor-help transition-colors" 
-                    />
-                    {/* Tooltip */}
-                    <div className="absolute bottom-full right-0 mb-2 w-80 bg-gray-900 text-white text-sm rounded-lg p-3 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-                      <div className="space-y-1">
-                        <p className="font-semibold">Système de notation</p>
-                        <p>• Chaque critère est noté de 1 à 10</p>
-                        <p>• Score total maximum : 80 points</p>
-                        <p>• Classement automatique par score total</p>
-                        <p>• Analyse comparative par critère</p>
+        {/* Menu horizontal des onglets par prestation */}
+        <div className="mb-8 relative">
+          <nav className="flex flex-wrap bg-gray-100 p-1 rounded-xl gap-1" aria-label="Tabs">
+            {tabs.map((tab, index) => {
+              const Icon = tab.icon;
+              const isActive = activeTab === tab.id;
+              const isLast = index === tabs.length - 1;
+              
+              return (
+                <div key={tab.id} className={`relative ${isLast ? 'ml-auto' : ''}`}>
+                  {/* Icône d'information pour Maintenance & Support */}
+                  {tab.id === 'Maintenance & Support' && (
+                    <div className="absolute -top-6 right-2 group">
+                      <Info 
+                        className="w-4 h-4 text-gray-400 hover:text-blue-600 cursor-help transition-colors" 
+                      />
+                      {/* Tooltip */}
+                      <div className="absolute bottom-full right-0 mb-2 w-80 bg-gray-900 text-white text-sm rounded-lg p-3 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                        <div className="space-y-1">
+                          <p className="font-semibold">Système de notation</p>
+                          <p>• Chaque critère est noté de 1 à 10</p>
+                          <p>• Score total maximum : 80 points</p>
+                          <p>• Classement automatique par score total</p>
+                          <p>• Analyse comparative par critère</p>
+                        </div>
+                        {/* Flèche du tooltip */}
+                        <div className="absolute top-full right-4 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
                       </div>
-                      {/* Flèche du tooltip */}
-                      <div className="absolute top-full right-4 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
                     </div>
-                  </div>
-                )}
-                
-                <button
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`flex items-center space-x-2 px-4 py-3 text-sm font-medium rounded-lg transition-all duration-200 whitespace-nowrap ${
-                    isActive
-                      ? 'bg-gradient-to-r from-blue-600 via-blue-700 to-blue-800 text-white shadow-lg'
-                      : 'text-gray-700 hover:text-gray-900 hover:bg-white'
-                  }`}
-                >
-                  <Icon className={`w-4 h-4 ${isActive ? 'text-white' : 'text-gray-500'}`} />
-                  <span>{tab.label}</span>
-                </button>
-              </div>
-            );
-          })}
-        </nav>
-      </div>
-      
-      {/* Contenu de l'onglet actif */}
-      <div className="mb-8">
-        {renderTabContent()}
+                  )}
+                  
+                  <button
+                    onClick={() => setActiveTab(tab.id)}
+                    className={`flex items-center space-x-2 px-4 py-3 text-sm font-medium rounded-lg transition-all duration-200 whitespace-nowrap ${
+                      isActive
+                        ? 'bg-gradient-to-r from-blue-600 via-blue-700 to-blue-800 text-white shadow-lg'
+                        : 'text-gray-700 hover:text-gray-900 hover:bg-white'
+                    }`}
+                  >
+                    <Icon className={`w-4 h-4 ${isActive ? 'text-white' : 'text-gray-500'}`} />
+                    <span>{tab.label}</span>
+                  </button>
+                </div>
+              );
+            })}
+          </nav>
+        </div>
+        
+        {/* Contenu de l'onglet actif */}
+        <div className="mb-8">
+          {renderTabContent()}
+        </div>
       </div>
     </div>
   );
