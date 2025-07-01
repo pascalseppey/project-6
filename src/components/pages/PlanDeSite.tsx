@@ -1,95 +1,34 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { FolderOpen, Plus, MapPin, Edit3 } from 'lucide-react';
+import { useAppSelector, useAppDispatch } from '../../hooks';
+import { updateClientData } from '../../store/slices/currentClientSlice';
 import { Page } from '../types/sitemap';
 import SitemapItem from '../sitemap/SitemapItem';
 import SitemapZones from '../sitemap/SitemapZones';
 
-const initialPages: Page[] = [
-  {
-    id: '1',
-    name: 'Accueil',
-    slug: '/accueil',
-    level: 1,
-    type: 'home',
-    isFixed: true,
-    order: 0,
-  },
-  {
-    id: '2',
-    name: 'Services',
-    slug: '/services',
-    level: 1,
-    type: 'page',
-    isFixed: false,
-    order: 1,
-  },
-  {
-    id: '5',
-    name: 'Développement Web',
-    slug: '/services/developpement-web',
-    level: 2,
-    type: 'page',
-    isFixed: false,
-    order: 2,
-  },
-  {
-    id: '6',
-    name: 'Applications Mobile',
-    slug: '/services/applications-mobile',
-    level: 2,
-    type: 'page',
-    isFixed: false,
-    order: 3,
-  },
-  {
-    id: '7',
-    name: 'React Native',
-    slug: '/services/applications-mobile/react-native',
-    level: 3,
-    type: 'page',
-    isFixed: false,
-    order: 4,
-  },
-  {
-    id: '8',
-    name: 'Flutter',
-    slug: '/services/applications-mobile/flutter',
-    level: 3,
-    type: 'page',
-    isFixed: false,
-    order: 5,
-  },
-  {
-    id: '3',
-    name: 'À Propos',
-    slug: '/a-propos',
-    level: 1,
-    type: 'page',
-    isFixed: false,
-    order: 6,
-  },
-  {
-    id: '9',
-    name: 'Notre Équipe',
-    slug: '/a-propos/equipe',
-    level: 2,
-    type: 'page',
-    isFixed: false,
-    order: 7,
-  },
-  {
-    id: '4',
-    name: 'Contact',
-    slug: '/contact',
-    level: 1,
-    type: 'page',
-    isFixed: false,
-    order: 8,
-  },
-];
-
 const PlanDeSite: React.FC = () => {
-  const [pages, setPages] = useState<Page[]>(initialPages);
+  const dispatch = useAppDispatch();
+  
+  // Récupérer les données depuis Redux
+  const currentClient = useAppSelector(state => state.currentClient.data);
+  
+  // Si pas de client chargé, afficher un message
+  if (!currentClient) {
+    return (
+      <div className="p-8">
+        <div className="text-center py-12">
+          <div className="text-gray-400 mb-4">
+            <FolderOpen className="w-16 h-16 mx-auto" />
+          </div>
+          <p className="text-gray-500 mb-4">Aucun client sélectionné</p>
+          <p className="text-sm text-gray-400">Sélectionnez un client dans le menu en haut à droite</p>
+        </div>
+      </div>
+    );
+  }
+
+  const pages = currentClient.data.pages;
+  
   const [draggedPage, setDraggedPage] = useState<Page | null>(null);
   const [dragOverInfo, setDragOverInfo] = useState<{ pageId: string; position: 'above' | 'below' } | null>(null);
   const [isOverZone, setIsOverZone] = useState(false);
@@ -100,6 +39,11 @@ const PlanDeSite: React.FC = () => {
   const [isHorizontalDrag, setIsHorizontalDrag] = useState(false);
   const dragCounter = useRef(0);
   const containerRef = useRef<HTMLDivElement>(null);
+
+  // Fonction pour mettre à jour les pages via Redux
+  const updatePages = (updatedPages: Page[]) => {
+    dispatch(updateClientData({ path: 'data.pages', value: updatedPages }));
+  };
 
   // Fonction pour trouver le parent logique d'une page
   const findLogicalParent = (pageIndex: number, pageLevel: number, allPages: Page[]): Page | null => {
@@ -232,21 +176,19 @@ const PlanDeSite: React.FC = () => {
           }
           
           if (newLevel !== draggedPage.level) {
-            setPages(prevPages => {
-              let updatedPages = prevPages.map(page => 
-                page.id === draggedPage.id 
-                  ? { ...page, level: newLevel }
-                  : page
-              );
-              
-              // Valider et corriger la hiérarchie
-              updatedPages = validateAndFixHierarchy(updatedPages);
-              
-              // Mettre à jour les slugs
-              updatedPages = updateSlugsBasedOnHierarchy(updatedPages);
-              
-              return updatedPages;
-            });
+            let updatedPages = pages.map(page => 
+              page.id === draggedPage.id 
+                ? { ...page, level: newLevel }
+                : page
+            );
+            
+            // Valider et corriger la hiérarchie
+            updatedPages = validateAndFixHierarchy(updatedPages);
+            
+            // Mettre à jour les slugs
+            updatedPages = updateSlugsBasedOnHierarchy(updatedPages);
+            
+            updatePages(updatedPages);
           }
         }
       }
@@ -269,7 +211,7 @@ const PlanDeSite: React.FC = () => {
       document.removeEventListener('drop', handleGlobalDrop);
       document.removeEventListener('dragover', handleGlobalDragOver);
     };
-  }, [draggedPage, isHorizontalDrag, dragStartPosition, currentDragPosition]);
+  }, [draggedPage, isHorizontalDrag, dragStartPosition, currentDragPosition, pages]);
 
   const handleDragStart = (page: Page, e?: React.DragEvent) => {
     console.log('PlanDeSite: Drag start:', page.name);
@@ -377,21 +319,19 @@ const PlanDeSite: React.FC = () => {
         
         if (newLevel !== draggedPage.level) {
           console.log('Changing level from', draggedPage.level, 'to', newLevel);
-          setPages(prevPages => {
-            let updatedPages = prevPages.map(page => 
-              page.id === draggedPage.id 
-                ? { ...page, level: newLevel }
-                : page
-            );
-            
-            // Valider et corriger la hiérarchie
-            updatedPages = validateAndFixHierarchy(updatedPages);
-            
-            // Mettre à jour les slugs
-            updatedPages = updateSlugsBasedOnHierarchy(updatedPages);
-            
-            return updatedPages;
-          });
+          let updatedPages = pages.map(page => 
+            page.id === draggedPage.id 
+              ? { ...page, level: newLevel }
+              : page
+          );
+          
+          // Valider et corriger la hiérarchie
+          updatedPages = validateAndFixHierarchy(updatedPages);
+          
+          // Mettre à jour les slugs
+          updatedPages = updateSlugsBasedOnHierarchy(updatedPages);
+          
+          updatePages(updatedPages);
         }
         
         handleDragEnd();
@@ -428,7 +368,7 @@ const PlanDeSite: React.FC = () => {
         // Mettre à jour les slugs
         updatedPages = updateSlugsBasedOnHierarchy(updatedPages);
         
-        setPages(updatedPages);
+        updatePages(updatedPages);
       }
     }
 
@@ -462,21 +402,19 @@ const PlanDeSite: React.FC = () => {
     console.log('Zone drop:', { fromLevel: draggedPage.level, toLevel: level });
 
     // Update the page level
-    setPages(prevPages => {
-      let updatedPages = prevPages.map(page => 
-        page.id === draggedPage.id 
-          ? { ...page, level }
-          : page
-      );
-      
-      // Valider et corriger la hiérarchie
-      updatedPages = validateAndFixHierarchy(updatedPages);
-      
-      // Mettre à jour les slugs
-      updatedPages = updateSlugsBasedOnHierarchy(updatedPages);
-      
-      return updatedPages;
-    });
+    let updatedPages = pages.map(page => 
+      page.id === draggedPage.id 
+        ? { ...page, level }
+        : page
+    );
+    
+    // Valider et corriger la hiérarchie
+    updatedPages = validateAndFixHierarchy(updatedPages);
+    
+    // Mettre à jour les slugs
+    updatedPages = updateSlugsBasedOnHierarchy(updatedPages);
+    
+    updatePages(updatedPages);
 
     handleDragEnd();
   };
@@ -486,47 +424,44 @@ const PlanDeSite: React.FC = () => {
     if (page?.isFixed) return;
     
     if (confirm('Êtes-vous sûr de vouloir supprimer cette page ?')) {
-      setPages(pages.filter(p => p.id !== pageId));
+      const updatedPages = pages.filter(p => p.id !== pageId);
+      updatePages(updatedPages);
     }
   };
 
   const handleLevelChange = (pageId: string, newLevel: 1 | 2 | 3) => {
-    setPages(prevPages => {
-      let updatedPages = prevPages.map(page => 
-        page.id === pageId 
-          ? { ...page, level: newLevel }
-          : page
-      );
-      
-      // Valider et corriger la hiérarchie
-      updatedPages = validateAndFixHierarchy(updatedPages);
-      
-      // Mettre à jour les slugs
-      updatedPages = updateSlugsBasedOnHierarchy(updatedPages);
-      
-      return updatedPages;
-    });
+    let updatedPages = pages.map(page => 
+      page.id === pageId 
+        ? { ...page, level: newLevel }
+        : page
+    );
+    
+    // Valider et corriger la hiérarchie
+    updatedPages = validateAndFixHierarchy(updatedPages);
+    
+    // Mettre à jour les slugs
+    updatedPages = updateSlugsBasedOnHierarchy(updatedPages);
+    
+    updatePages(updatedPages);
   };
 
   const handleNameChange = (pageId: string, newName: string) => {
-    setPages(prevPages => {
-      let updatedPages = prevPages.map(page => {
-        if (page.id === pageId) {
-          // Generate new slug for level 1 pages, or update based on hierarchy for others
-          let newSlug = page.slug;
-          if (page.level === 1) {
-            newSlug = `/${generateSlugFromName(newName)}`;
-          }
-          return { ...page, name: newName, slug: newSlug };
+    let updatedPages = pages.map(page => {
+      if (page.id === pageId) {
+        // Generate new slug for level 1 pages, or update based on hierarchy for others
+        let newSlug = page.slug;
+        if (page.level === 1) {
+          newSlug = `/${generateSlugFromName(newName)}`;
         }
-        return page;
-      });
-      
-      // Mettre à jour les slugs basés sur la hiérarchie (pour les pages de niveau 2 et 3)
-      updatedPages = updateSlugsBasedOnHierarchy(updatedPages);
-      
-      return updatedPages;
+        return { ...page, name: newName, slug: newSlug };
+      }
+      return page;
     });
+    
+    // Mettre à jour les slugs basés sur la hiérarchie (pour les pages de niveau 2 et 3)
+    updatedPages = updateSlugsBasedOnHierarchy(updatedPages);
+    
+    updatePages(updatedPages);
   };
 
   const handleAddPage = () => {
@@ -540,7 +475,7 @@ const PlanDeSite: React.FC = () => {
       order: pages.length,
     };
     
-    setPages([...pages, newPage]);
+    updatePages([...pages, newPage]);
   };
 
   // Fonctions pour déplacer les pages avec les flèches
@@ -556,7 +491,7 @@ const PlanDeSite: React.FC = () => {
       page.order = index;
     });
     
-    setPages(newPages);
+    updatePages(newPages);
   };
 
   const handleMoveDown = (pageId: string) => {
@@ -571,7 +506,7 @@ const PlanDeSite: React.FC = () => {
       page.order = index;
     });
     
-    setPages(newPages);
+    updatePages(newPages);
   };
 
   const levelCounts = {
@@ -598,7 +533,7 @@ const PlanDeSite: React.FC = () => {
             </div>
             <div>
               <h1 className="text-4xl font-bold text-white mb-2">Plan de site</h1>
-              <p className="text-blue-100 text-lg">Gérez la structure et la hiérarchie de votre site</p>
+              <p className="text-blue-100 text-lg">Gérez la structure et la hiérarchie du site de {currentClient.metadata.nom}</p>
             </div>
           </div>
           
@@ -726,6 +661,7 @@ const PlanDeSite: React.FC = () => {
               <li>• <strong>🎯 Zones colorées</strong> : Utilisez les zones colorées pour changer rapidement le niveau d'une page</li>
               <li>• <strong>➕ Nouvelle page</strong> : Les nouvelles pages s'ajoutent automatiquement en bas de liste</li>
               <li>• <strong>🚫 Page fixe</strong> : La page "Accueil" ne peut pas être déplacée ou supprimée</li>
+              <li>• <strong>💾 Sauvegarde automatique</strong> : Toutes les modifications sont automatiquement sauvegardées</li>
             </ul>
           </div>
         </div>
