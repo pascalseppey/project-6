@@ -325,7 +325,7 @@ const DesignBranding: React.FC = () => {
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {currentClient.data.couleurs
+              {[...currentClient.data.couleurs]
                 .sort((a, b) => a.ordre - b.ordre)
                 .map((couleur, index) => (
                 <div key={index} className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm">
