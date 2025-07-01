@@ -345,6 +345,12 @@ const Localisation: React.FC = () => {
     setFichesList(updatedFiches);
   };
 
+  const supprimerAvis = (index: number) => {
+    const updatedFiches = [...fichesList];
+    updatedFiches[activeFiche].avis = updatedFiches[activeFiche].avis.filter((_, i) => i !== index);
+    setFichesList(updatedFiches);
+  };
+
   // Calcul du score global et nombre d'avis
   const calculerScoreGlobal = () => {
     const avis = fichesList[activeFiche]?.avis || [];
@@ -523,6 +529,13 @@ const Localisation: React.FC = () => {
                         </div>
                       </div>
                     </div>
+                    
+                    <button
+                      onClick={() => supprimerAvis(index)}
+                      className="text-red-500 hover:text-red-700 transition-colors"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
                   </div>
                   
                   <div className="grid grid-cols-2 gap-4 mb-4">
@@ -704,16 +717,20 @@ const Localisation: React.FC = () => {
 
   return (
     <div className="p-8">
-      {/* Bannière bleue avec abeille emoji et titre */}
+      {/* Bannière bleue avec judoka et titre */}
       <div className="bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800 rounded-2xl p-8 mb-8 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-blue-600/20 to-transparent"></div>
         
         <div className="relative z-10 flex items-center justify-between">
-          {/* Zone gauche avec abeille emoji et titre */}
+          {/* Zone gauche avec judoka et titre */}
           <div className="flex items-center space-x-6">
-            {/* Abeille emoji qui vole à gauche du texte */}
-            <div className="text-6xl animate-bounce">
-              🐝
+            {/* Judoka remplaçant l'abeille */}
+            <div className="w-20 h-20 flex items-center justify-center">
+              <img 
+                src="/judoka.png" 
+                alt="Judoka Beezia" 
+                className="w-16 h-16 object-contain drop-shadow-lg"
+              />
             </div>
             <div>
               <h1 className="text-4xl font-bold text-white mb-2">Localisation</h1>
