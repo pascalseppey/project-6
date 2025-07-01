@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { GripVertical, Eye, Trash2, Home, FileText, Lock, Check, X } from 'lucide-react';
+import { GripVertical, Eye, Trash2, Home, FileText, Lock, Check, X, ChevronUp, ChevronDown } from 'lucide-react';
 import { Page } from '../types/sitemap';
 
 interface SitemapItemProps {
@@ -12,10 +12,14 @@ interface SitemapItemProps {
   onDelete: (pageId: string) => void;
   onLevelChange: (pageId: string, newLevel: 1 | 2 | 3) => void;
   onNameChange: (pageId: string, newName: string) => void;
+  onMoveUp: (pageId: string) => void;
+  onMoveDown: (pageId: string) => void;
   isDragging: boolean;
   dragOverPosition?: 'above' | 'below';
   isOverZone?: boolean;
   dragDirection?: 'left' | 'right' | null;
+  canMoveUp: boolean;
+  canMoveDown: boolean;
 }
 
 const levelColors = {
@@ -58,10 +62,14 @@ export default function SitemapItem({
   onDelete, 
   onLevelChange,
   onNameChange,
+  onMoveUp,
+  onMoveDown,
   isDragging,
   dragOverPosition,
   isOverZone = false,
-  dragDirection = null
+  dragDirection = null,
+  canMoveUp,
+  canMoveDown
 }: SitemapItemProps) {
   const [showLevelSelector, setShowLevelSelector] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -277,6 +285,36 @@ export default function SitemapItem({
           {/* Actions */}
           {!isEditing && (
             <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+              {/* Flèches de déplacement vertical */}
+              {!page.isFixed && (
+                <div className="flex flex-col">
+                  <button
+                    onClick={() => onMoveUp(page.id)}
+                    disabled={!canMoveUp}
+                    className={`p-1 rounded transition-colors ${
+                      canMoveUp 
+                        ? 'text-gray-400 hover:text-blue-600 hover:bg-blue-50' 
+                        : 'text-gray-200 cursor-not-allowed'
+                    }`}
+                    title="Déplacer vers le haut"
+                  >
+                    <ChevronUp className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={() => onMoveDown(page.id)}
+                    disabled={!canMoveDown}
+                    className={`p-1 rounded transition-colors ${
+                      canMoveDown 
+                        ? 'text-gray-400 hover:text-blue-600 hover:bg-blue-50' 
+                        : 'text-gray-200 cursor-not-allowed'
+                    }`}
+                    title="Déplacer vers le bas"
+                  >
+                    <ChevronDown className="w-4 h-4" />
+                  </button>
+                </div>
+              )}
+              
               <button className="p-2 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors">
                 <Eye className="w-4 h-4" />
               </button>

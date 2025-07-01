@@ -543,6 +543,37 @@ const PlanDeSite: React.FC = () => {
     setPages([...pages, newPage]);
   };
 
+  // Fonctions pour déplacer les pages avec les flèches
+  const handleMoveUp = (pageId: string) => {
+    const currentIndex = pages.findIndex(p => p.id === pageId);
+    if (currentIndex <= 0) return; // Ne peut pas monter plus haut
+    
+    const newPages = [...pages];
+    [newPages[currentIndex - 1], newPages[currentIndex]] = [newPages[currentIndex], newPages[currentIndex - 1]];
+    
+    // Mettre à jour les ordres
+    newPages.forEach((page, index) => {
+      page.order = index;
+    });
+    
+    setPages(newPages);
+  };
+
+  const handleMoveDown = (pageId: string) => {
+    const currentIndex = pages.findIndex(p => p.id === pageId);
+    if (currentIndex >= pages.length - 1) return; // Ne peut pas descendre plus bas
+    
+    const newPages = [...pages];
+    [newPages[currentIndex], newPages[currentIndex + 1]] = [newPages[currentIndex + 1], newPages[currentIndex]];
+    
+    // Mettre à jour les ordres
+    newPages.forEach((page, index) => {
+      page.order = index;
+    });
+    
+    setPages(newPages);
+  };
+
   const levelCounts = {
     1: pages.filter(p => p.level === 1).length,
     2: pages.filter(p => p.level === 2).length,
@@ -647,7 +678,7 @@ const PlanDeSite: React.FC = () => {
             </div>
 
             <div className="space-y-3">
-              {pages.map((page) => (
+              {pages.map((page, index) => (
                 <SitemapItem
                   key={page.id}
                   page={page}
@@ -659,9 +690,13 @@ const PlanDeSite: React.FC = () => {
                   onDelete={handleDelete}
                   onLevelChange={handleLevelChange}
                   onNameChange={handleNameChange}
+                  onMoveUp={handleMoveUp}
+                  onMoveDown={handleMoveDown}
                   isDragging={draggedPage?.id === page.id}
                   isOverZone={isOverZone}
                   dragDirection={dragDirection}
+                  canMoveUp={index > 0 && !page.isFixed}
+                  canMoveDown={index < pages.length - 1 && !page.isFixed}
                   dragOverPosition={
                     dragOverInfo?.pageId === page.id ? dragOverInfo.position : undefined
                   }
@@ -684,14 +719,13 @@ const PlanDeSite: React.FC = () => {
             <h3 className="text-lg font-semibold text-blue-900 mb-3">Instructions</h3>
             <ul className="text-blue-800 space-y-2 text-sm">
               <li>• <strong>✏️ Renommer</strong> : Cliquez sur le nom d'une page pour la renommer directement</li>
-              <li>• <strong>📱 Drag & Drop Vertical</strong> : Glissez-déposez verticalement pour réorganiser l'ordre des pages</li>
-              <li>• <strong>🔄 Drag & Drop Horizontal</strong> : Glissez-déposez horizontalement pour changer le niveau</li>
-              <li>• <strong>→ Droite</strong> : <span className="font-semibold text-green-600">VERT</span> - Augmente le niveau (1→2, 2→3)</li>
-              <li>• <strong>← Gauche</strong> : <span className="font-semibold text-blue-600">BLEU</span> - Diminue le niveau (3→2, 2→1)</li>
+              <li>• <strong>⬆️⬇️ Flèches</strong> : Utilisez les flèches haut/bas pour réorganiser l'ordre des pages</li>
+              <li>• <strong>🎯 Niveaux</strong> : Cliquez sur "Niveau 1", "Niveau 2" ou "Niveau 3" pour changer la hiérarchie</li>
               <li>• <strong>✅ Validation automatique</strong> : Les niveaux sont automatiquement corrigés pour respecter la hiérarchie</li>
               <li>• <strong>🔗 Mise à jour des URLs</strong> : Les slugs sont automatiquement mis à jour selon la hiérarchie</li>
               <li>• <strong>🎯 Zones colorées</strong> : Utilisez les zones colorées pour changer rapidement le niveau d'une page</li>
               <li>• <strong>➕ Nouvelle page</strong> : Les nouvelles pages s'ajoutent automatiquement en bas de liste</li>
+              <li>• <strong>🚫 Page fixe</strong> : La page "Accueil" ne peut pas être déplacée ou supprimée</li>
             </ul>
           </div>
         </div>
