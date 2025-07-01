@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Building2, Heart, Target, Users, Briefcase, Edit3, Save, X } from 'lucide-react';
+import { Building2, Heart, Target, Users, Briefcase, Edit3, Save, X, Info } from 'lucide-react';
 
 interface EditableFieldProps {
   value: string;
@@ -386,8 +386,8 @@ const InfosGenerales: React.FC = () => {
         </div>
       </div>
 
-      {/* Menu horizontal des onglets avec espacement amélioré */}
-      <div className="mb-8">
+      {/* Menu horizontal des onglets avec icône d'information */}
+      <div className="mb-8 relative">
         <nav className="flex bg-gray-100 p-1 rounded-xl" aria-label="Tabs">
           {tabs.map((tab, index) => {
             const Icon = tab.icon;
@@ -395,20 +395,40 @@ const InfosGenerales: React.FC = () => {
             const isLast = index === tabs.length - 1;
             
             return (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center space-x-3 px-8 py-4 text-sm font-medium rounded-lg transition-all duration-200 ${
-                  isActive
-                    ? 'bg-gradient-to-r from-blue-600 via-blue-700 to-blue-800 text-white shadow-lg'
-                    : 'text-gray-700 hover:text-gray-900 hover:bg-white'
-                } ${
-                  isLast ? 'ml-auto' : 'mr-2'
-                }`}
-              >
-                <Icon className={`w-5 h-5 ${isActive ? 'text-white' : 'text-gray-500'}`} />
-                <span>{tab.label}</span>
-              </button>
+              <div key={tab.id} className={`relative ${isLast ? 'ml-auto' : 'mr-2'}`}>
+                {/* Icône d'information pour Prestations */}
+                {tab.id === 'Prestations' && (
+                  <div className="absolute -top-6 right-2 group">
+                    <Info 
+                      className="w-4 h-4 text-gray-400 hover:text-blue-600 cursor-help transition-colors" 
+                    />
+                    {/* Tooltip */}
+                    <div className="absolute bottom-full right-0 mb-2 w-80 bg-gray-900 text-white text-sm rounded-lg p-3 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                      <div className="space-y-1">
+                        <p className="font-semibold">Comment modifier vos informations</p>
+                        <p>• Cliquez sur n'importe quel champ pour le modifier</p>
+                        <p>• Appuyez sur Entrée pour sauvegarder (champs simples)</p>
+                        <p>• Utilisez les boutons Sauvegarder/Annuler pour les textes longs</p>
+                        <p>• Échap pour annuler les modifications en cours</p>
+                      </div>
+                      {/* Flèche du tooltip */}
+                      <div className="absolute top-full right-4 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
+                    </div>
+                  </div>
+                )}
+                
+                <button
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`flex items-center space-x-3 px-8 py-4 text-sm font-medium rounded-lg transition-all duration-200 ${
+                    isActive
+                      ? 'bg-gradient-to-r from-blue-600 via-blue-700 to-blue-800 text-white shadow-lg'
+                      : 'text-gray-700 hover:text-gray-900 hover:bg-white'
+                  }`}
+                >
+                  <Icon className={`w-5 h-5 ${isActive ? 'text-white' : 'text-gray-500'}`} />
+                  <span>{tab.label}</span>
+                </button>
+              </div>
             );
           })}
         </nav>
@@ -417,24 +437,6 @@ const InfosGenerales: React.FC = () => {
       {/* Contenu de l'onglet actif en cellules séparées */}
       <div className="mb-8">
         {renderTabContent()}
-      </div>
-
-      {/* Instructions d'utilisation */}
-      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-6 border border-blue-200">
-        <div className="flex items-start space-x-4">
-          <div className="bg-blue-600 rounded-full p-2 flex-shrink-0">
-            <Edit3 className="w-5 h-5 text-white" />
-          </div>
-          <div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">Comment modifier vos informations</h3>
-            <div className="text-gray-600 space-y-1">
-              <p>• <strong>Cliquez</strong> sur n'importe quel champ pour le modifier</p>
-              <p>• <strong>Appuyez sur Entrée</strong> pour sauvegarder (champs simples)</p>
-              <p>• <strong>Utilisez les boutons</strong> Sauvegarder/Annuler pour les textes longs</p>
-              <p>• <strong>Échap</strong> pour annuler les modifications en cours</p>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   );
