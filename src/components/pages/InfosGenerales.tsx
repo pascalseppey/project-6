@@ -384,6 +384,16 @@ const InfosGenerales: React.FC = () => {
             </div>
           </div>
         </div>
+
+        {/* Abeille espion à gauche, collée au bas de la zone bleue */}
+        <div className="absolute -bottom-2 left-8 z-20">
+          <img 
+            src="/abaille_beezia.png" 
+            alt="Abeille Espion" 
+            className="w-16 h-16 object-contain drop-shadow-xl transform hover:scale-110 transition-transform duration-300 cursor-pointer"
+            title="L'abeille vous observe... 👀"
+          />
+        </div>
       </div>
 
       {/* Menu horizontal des onglets avec icône d'information */}
