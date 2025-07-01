@@ -12,42 +12,50 @@ export const useClientManager = () => {
   // Charger la liste des clients disponibles
   const loadAvailableClients = async () => {
     try {
-      // Simuler le chargement depuis le serveur/dossier
-      // En réalité, cela ferait un appel API pour lister les fichiers JSON
+      // Supprimer tous les anciens clients du localStorage
+      const keys = Object.keys(localStorage);
+      keys.forEach(key => {
+        if (key.startsWith('beezia-client-') || key === 'beezia-last-active-client') {
+          localStorage.removeItem(key);
+        }
+      });
+      
+      // Créer 3 nouveaux clients avec données complètes
       const mockClients: ClientMetadata[] = [
         {
           id: 'client-001',
-          nom: 'Charly Gaillard SARL',
-          email: 'contact@charlygaillard.ch',
+          nom: 'Entreprise Alpha SA',
+          email: 'contact@alpha.ch',
           createdAt: '2024-01-15T10:00:00Z',
           lastModified: '2025-01-01T15:30:00Z'
         },
         {
           id: 'client-002',
-          nom: 'TechStart Innovation',
-          email: 'hello@techstart.ch',
+          nom: 'Beta Solutions SARL',
+          email: 'info@beta.ch',
           createdAt: '2024-03-20T14:30:00Z',
           lastModified: '2024-12-28T09:15:00Z'
         },
         {
           id: 'client-003',
-          nom: 'Digital Solutions SA',
-          email: 'info@digitalsolutions.ch',
+          nom: 'Gamma Consulting SA',
+          email: 'hello@gamma.ch',
           createdAt: '2024-06-10T11:45:00Z',
           lastModified: '2024-12-30T16:20:00Z'
         }
       ];
       
+      // Créer les données complètes pour chaque client
+      for (const client of mockClients) {
+        const clientData = createDefaultClientData(client.id, client.nom, client.email);
+        localStorage.setItem(`beezia-client-${client.id}`, JSON.stringify(clientData));
+      }
+      
       dispatch(setAvailableClients(mockClients));
       
-      // Charger le dernier client actif depuis localStorage
-      const savedLastActive = localStorage.getItem('beezia-last-active-client');
-      if (savedLastActive && mockClients.find(c => c.id === savedLastActive)) {
-        await loadClient(savedLastActive);
-      } else if (mockClients.length > 0) {
-        // Charger le premier client par ordre alphabétique
-        const sortedClients = [...mockClients].sort((a, b) => a.nom.localeCompare(b.nom));
-        await loadClient(sortedClients[0].id);
+      // Charger le premier client par défaut
+      if (mockClients.length > 0) {
+        await loadClient(mockClients[0].id);
       }
       
     } catch (error) {
