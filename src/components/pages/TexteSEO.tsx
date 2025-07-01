@@ -736,9 +736,6 @@ const TexteSEO: React.FC = () => {
                       {page.name}
                     </span>
                   </div>
-                  <div className="text-xs text-gray-500 mt-1 ml-4">
-                    {page.slug}
-                  </div>
                 </button>
               ))}
             </div>
@@ -783,7 +780,6 @@ const TexteSEO: React.FC = () => {
             <h2 className="text-2xl font-bold text-gray-900 mb-2">
               {activePage?.name || 'Page non trouvée'}
             </h2>
-            <p className="text-gray-600">{activePage?.slug}</p>
           </div>
 
           {/* Onglets de second niveau */}
