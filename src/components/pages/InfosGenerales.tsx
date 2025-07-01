@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { Building2, Heart, Target, Users, Briefcase, Edit3, Save, X, Info } from 'lucide-react';
+import { useAppSelector, useAppDispatch } from '../../hooks';
+import { updateClientData } from '../../store/slices/currentClientSlice';
 
 interface EditableFieldProps {
   value: string;
@@ -119,46 +121,25 @@ const EditableField: React.FC<EditableFieldProps> = ({
 
 const InfosGenerales: React.FC = () => {
   const [activeTab, setActiveTab] = useState('Entreprise');
+  const dispatch = useAppDispatch();
   
-  // États pour tous les champs éditables
-  const [entrepriseData, setEntrepriseData] = useState({
-    raisonSociale: 'Charly Gaillard SARL',
-    secteurActivite: 'Services numériques & Marketing digital',
-    nombreEmployes: '1-5 employés',
-    anneeFondation: '2020'
-  });
-
-  const [adnData, setAdnData] = useState({
-    historique: 'Fondée en 2020, Charly Gaillard SARL est née de la passion pour le développement web et le marketing digital. Spécialisée dans la création de solutions numériques sur mesure, l\'entreprise accompagne les PME et startups dans leur transformation digitale.',
-    presentation: 'Nous sommes une agence digitale innovante qui transforme vos idées en solutions numériques performantes. Notre mission est d\'accompagner les entreprises dans leur croissance digitale en proposant des services personnalisés et des technologies de pointe.'
-  });
-
-  const [valeursData, setValeursData] = useState([
-    { title: 'Innovation', description: 'Nous restons à la pointe des technologies pour offrir des solutions avant-gardistes.' },
-    { title: 'Excellence', description: 'Chaque projet est réalisé avec le plus haut niveau de qualité et de professionnalisme.' },
-    { title: 'Transparence', description: 'Communication claire et honnête avec nos clients à chaque étape du projet.' },
-    { title: 'Agilité', description: 'Adaptation rapide aux besoins changeants et aux nouvelles opportunités du marché.' },
-    { title: 'Collaboration', description: 'Travail en équipe et partenariat étroit avec nos clients pour atteindre leurs objectifs.' },
-    { title: 'Durabilité', description: 'Développement de solutions pérennes qui accompagnent la croissance à long terme.' }
-  ]);
-
-  const [ciblesData, setCiblesData] = useState([
-    { title: 'Startups Tech', description: 'Jeunes entreprises technologiques cherchant à développer leur présence digitale.' },
-    { title: 'PME Locales', description: 'Petites et moyennes entreprises souhaitant moderniser leurs outils numériques.' },
-    { title: 'E-commerce', description: 'Boutiques en ligne nécessitant des solutions de vente performantes.' },
-    { title: 'Professions Libérales', description: 'Médecins, avocats, consultants ayant besoin de visibilité en ligne.' },
-    { title: 'Associations', description: 'Organisations à but non lucratif cherchant à améliorer leur communication.' },
-    { title: 'Artisans', description: 'Artisans et créateurs voulant valoriser leur savoir-faire sur le web.' }
-  ]);
-
-  const [prestationsData, setPrestationsData] = useState([
-    { title: 'Développement Web', description: 'Création de sites web modernes, responsives et optimisés pour le SEO.' },
-    { title: 'Applications Mobiles', description: 'Développement d\'applications iOS et Android natives et hybrides.' },
-    { title: 'E-commerce', description: 'Solutions de vente en ligne complètes avec gestion des stocks et paiements.' },
-    { title: 'Marketing Digital', description: 'Stratégies SEO, SEA, réseaux sociaux et campagnes publicitaires ciblées.' },
-    { title: 'Consulting IT', description: 'Conseil en transformation digitale et optimisation des processus métier.' },
-    { title: 'Maintenance & Support', description: 'Maintenance technique, mises à jour et support client continu.' }
-  ]);
+  // Récupérer les données depuis Redux
+  const currentClient = useAppSelector(state => state.currentClient.data);
+  
+  // Si pas de client chargé, afficher un message
+  if (!currentClient) {
+    return (
+      <div className="p-8">
+        <div className="text-center py-12">
+          <div className="text-gray-400 mb-4">
+            <Building2 className="w-16 h-16 mx-auto" />
+          </div>
+          <p className="text-gray-500 mb-4">Aucun client sélectionné</p>
+          <p className="text-sm text-gray-400">Sélectionnez un client dans le menu en haut à droite</p>
+        </div>
+      </div>
+    );
+  }
 
   const tabs = [
     { id: 'Entreprise', label: 'Entreprise', icon: Building2 },
@@ -168,30 +149,25 @@ const InfosGenerales: React.FC = () => {
     { id: 'Prestations', label: 'Prestations', icon: Briefcase },
   ];
 
+  // Fonctions pour mettre à jour les données via Redux
   const updateEntreprise = (field: string, value: string) => {
-    setEntrepriseData(prev => ({ ...prev, [field]: value }));
+    dispatch(updateClientData({ path: `data.entreprise.${field}`, value }));
   };
 
   const updateAdn = (field: string, value: string) => {
-    setAdnData(prev => ({ ...prev, [field]: value }));
+    dispatch(updateClientData({ path: `data.adn.${field}`, value }));
   };
 
   const updateValeur = (index: number, field: string, value: string) => {
-    setValeursData(prev => prev.map((item, i) => 
-      i === index ? { ...item, [field]: value } : item
-    ));
+    dispatch(updateClientData({ path: `data.valeurs.${index}.${field}`, value }));
   };
 
   const updateCible = (index: number, field: string, value: string) => {
-    setCiblesData(prev => prev.map((item, i) => 
-      i === index ? { ...item, [field]: value } : item
-    ));
+    dispatch(updateClientData({ path: `data.cibles.${index}.${field}`, value }));
   };
 
   const updatePrestation = (index: number, field: string, value: string) => {
-    setPrestationsData(prev => prev.map((item, i) => 
-      i === index ? { ...item, [field]: value } : item
-    ));
+    dispatch(updateClientData({ path: `data.prestations.${index}.${field}`, value }));
   };
 
   const renderTabContent = () => {
@@ -202,7 +178,7 @@ const InfosGenerales: React.FC = () => {
             <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Raison sociale</h3>
               <EditableField
-                value={entrepriseData.raisonSociale}
+                value={currentClient.data.entreprise.raisonSociale}
                 onSave={(value) => updateEntreprise('raisonSociale', value)}
                 placeholder="Nom de votre entreprise"
               />
@@ -211,7 +187,7 @@ const InfosGenerales: React.FC = () => {
             <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Secteur d'activité</h3>
               <EditableField
-                value={entrepriseData.secteurActivite}
+                value={currentClient.data.entreprise.secteurActivite}
                 onSave={(value) => updateEntreprise('secteurActivite', value)}
                 placeholder="Votre secteur d'activité"
               />
@@ -220,7 +196,7 @@ const InfosGenerales: React.FC = () => {
             <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Nombre d'employés</h3>
               <EditableField
-                value={entrepriseData.nombreEmployes}
+                value={currentClient.data.entreprise.nombreEmployes}
                 onSave={(value) => updateEntreprise('nombreEmployes', value)}
                 placeholder="Nombre d'employés"
               />
@@ -229,7 +205,7 @@ const InfosGenerales: React.FC = () => {
             <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Année de fondation</h3>
               <EditableField
-                value={entrepriseData.anneeFondation}
+                value={currentClient.data.entreprise.anneeFondation}
                 onSave={(value) => updateEntreprise('anneeFondation', value)}
                 placeholder="Année de création"
               />
@@ -243,7 +219,7 @@ const InfosGenerales: React.FC = () => {
             <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Historique de l'entreprise</h3>
               <EditableField
-                value={adnData.historique}
+                value={currentClient.data.adn.historique}
                 onSave={(value) => updateAdn('historique', value)}
                 multiline={true}
                 placeholder="Racontez l'histoire de votre entreprise..."
@@ -253,7 +229,7 @@ const InfosGenerales: React.FC = () => {
             <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Texte de présentation</h3>
               <EditableField
-                value={adnData.presentation}
+                value={currentClient.data.adn.presentation}
                 onSave={(value) => updateAdn('presentation', value)}
                 multiline={true}
                 placeholder="Présentez votre entreprise en quelques lignes..."
@@ -265,7 +241,7 @@ const InfosGenerales: React.FC = () => {
       case 'Valeurs':
         return (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {valeursData.map((valeur, index) => (
+            {currentClient.data.valeurs.map((valeur, index) => (
               <div key={index} className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm">
                 <div className="mb-4">
                   <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider mb-3">
@@ -294,7 +270,7 @@ const InfosGenerales: React.FC = () => {
       case 'Cibles Clients':
         return (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {ciblesData.map((cible, index) => (
+            {currentClient.data.cibles.map((cible, index) => (
               <div key={index} className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm">
                 <div className="mb-4">
                   <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider mb-3">
@@ -323,7 +299,7 @@ const InfosGenerales: React.FC = () => {
       case 'Prestations':
         return (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {prestationsData.map((prestation, index) => (
+            {currentClient.data.prestations.map((prestation, index) => (
               <div key={index} className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm">
                 <div className="mb-4">
                   <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider mb-3">
@@ -373,7 +349,7 @@ const InfosGenerales: React.FC = () => {
             </div>
             <div>
               <h1 className="text-4xl font-bold text-white mb-2">Infos Générales</h1>
-              <p className="text-blue-100 text-lg">Informations de base sur votre entreprise</p>
+              <p className="text-blue-100 text-lg">Informations de base sur {currentClient.metadata.nom}</p>
             </div>
           </div>
           
@@ -411,6 +387,7 @@ const InfosGenerales: React.FC = () => {
                         <p>• Appuyez sur Entrée pour sauvegarder (champs simples)</p>
                         <p>• Utilisez les boutons Sauvegarder/Annuler pour les textes longs</p>
                         <p>• Échap pour annuler les modifications en cours</p>
+                        <p>• Les modifications sont automatiquement sauvegardées</p>
                       </div>
                       {/* Flèche du tooltip */}
                       <div className="absolute top-full right-4 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>

@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { Palette, Upload, Eye, Download, Edit3, Save, X, Info, Plus, Trash2 } from 'lucide-react';
+import { useAppSelector, useAppDispatch } from '../../hooks';
+import { updateClientData } from '../../store/slices/currentClientSlice';
 
 interface EditableFieldProps {
   value: string;
@@ -117,48 +119,27 @@ const EditableField: React.FC<EditableFieldProps> = ({
   );
 };
 
-interface Couleur {
-  nom: string;
-  hex: string;
-  usage: string;
-  ordre: number;
-}
-
-interface Typographie {
-  nom: string;
-  famille: string;
-  usage: 'titre' | 'texte';
-  taille: string;
-  poids: string;
-}
-
 const DesignBranding: React.FC = () => {
   const [activeTab, setActiveTab] = useState('Logo');
+  const dispatch = useAppDispatch();
   
-  // États pour le logo
-  const [logoData, setLogoData] = useState({
-    nom: 'Logo Charly Gaillard',
-    description: 'Logo moderne et épuré représentant l\'expertise digitale',
-    formats: ['PNG', 'SVG', 'PDF'],
-    couleurs: 'Bleu (#2563eb) et Blanc (#ffffff)',
-    usage: 'Site web, cartes de visite, documents officiels'
-  });
-
-  // États pour les couleurs
-  const [couleursData, setCouleursData] = useState<Couleur[]>([
-    { nom: 'Bleu Principal', hex: '#2563eb', usage: 'Couleur principale, boutons, liens', ordre: 1 },
-    { nom: 'Bleu Foncé', hex: '#1d4ed8', usage: 'Textes importants, hover states', ordre: 2 },
-    { nom: 'Gris Neutre', hex: '#6b7280', usage: 'Textes secondaires, bordures', ordre: 3 }
-  ]);
-
-  // États pour les typographies
-  const [typographiesData, setTypographiesData] = useState<Typographie[]>([
-    { nom: 'Inter Bold', famille: 'Inter', usage: 'titre', taille: '32px', poids: '700' },
-    { nom: 'Inter SemiBold', famille: 'Inter', usage: 'titre', taille: '24px', poids: '600' },
-    { nom: 'Inter Medium', famille: 'Inter', usage: 'titre', taille: '18px', poids: '500' },
-    { nom: 'Inter Regular', famille: 'Inter', usage: 'texte', taille: '16px', poids: '400' },
-    { nom: 'Inter Light', famille: 'Inter', usage: 'texte', taille: '14px', poids: '300' }
-  ]);
+  // Récupérer les données depuis Redux
+  const currentClient = useAppSelector(state => state.currentClient.data);
+  
+  // Si pas de client chargé, afficher un message
+  if (!currentClient) {
+    return (
+      <div className="p-8">
+        <div className="text-center py-12">
+          <div className="text-gray-400 mb-4">
+            <Palette className="w-16 h-16 mx-auto" />
+          </div>
+          <p className="text-gray-500 mb-4">Aucun client sélectionné</p>
+          <p className="text-sm text-gray-400">Sélectionnez un client dans le menu en haut à droite</p>
+        </div>
+      </div>
+    );
+  }
 
   const tabs = [
     { id: 'Logo', label: 'Logo', icon: Upload },
@@ -167,51 +148,55 @@ const DesignBranding: React.FC = () => {
   ];
 
   const updateLogo = (field: string, value: string) => {
-    setLogoData(prev => ({ ...prev, [field]: value }));
+    dispatch(updateClientData({ path: `data.logo.${field}`, value }));
   };
 
   const ajouterCouleur = () => {
-    const nouvelleCouleur: Couleur = {
-      nom: `Couleur ${couleursData.length + 1}`,
+    const nouvelleCouleur = {
+      nom: `Couleur ${currentClient.data.couleurs.length + 1}`,
       hex: '#000000',
       usage: 'Nouvel usage',
-      ordre: couleursData.length + 1
+      ordre: currentClient.data.couleurs.length + 1
     };
-    setCouleursData([...couleursData, nouvelleCouleur]);
+    const updatedCouleurs = [...currentClient.data.couleurs, nouvelleCouleur];
+    dispatch(updateClientData({ path: 'data.couleurs', value: updatedCouleurs }));
   };
 
   const updateCouleur = (index: number, field: string, value: string | number) => {
-    setCouleursData(prev => prev.map((item, i) => 
-      i === index ? { ...item, [field]: value } : item
-    ));
+    const updatedCouleurs = [...currentClient.data.couleurs];
+    updatedCouleurs[index] = { ...updatedCouleurs[index], [field]: value };
+    dispatch(updateClientData({ path: 'data.couleurs', value: updatedCouleurs }));
   };
 
   const supprimerCouleur = (index: number) => {
-    if (couleursData.length > 1) {
-      setCouleursData(prev => prev.filter((_, i) => i !== index));
+    if (currentClient.data.couleurs.length > 1) {
+      const updatedCouleurs = currentClient.data.couleurs.filter((_, i) => i !== index);
+      dispatch(updateClientData({ path: 'data.couleurs', value: updatedCouleurs }));
     }
   };
 
   const ajouterTypographie = () => {
-    const nouvelleTypo: Typographie = {
+    const nouvelleTypo = {
       nom: 'Nouvelle Police',
       famille: 'Inter',
-      usage: 'texte',
+      usage: 'texte' as const,
       taille: '16px',
       poids: '400'
     };
-    setTypographiesData([...typographiesData, nouvelleTypo]);
+    const updatedTypos = [...currentClient.data.typographies, nouvelleTypo];
+    dispatch(updateClientData({ path: 'data.typographies', value: updatedTypos }));
   };
 
   const updateTypographie = (index: number, field: string, value: string) => {
-    setTypographiesData(prev => prev.map((item, i) => 
-      i === index ? { ...item, [field]: value } : item
-    ));
+    const updatedTypos = [...currentClient.data.typographies];
+    updatedTypos[index] = { ...updatedTypos[index], [field]: value };
+    dispatch(updateClientData({ path: 'data.typographies', value: updatedTypos }));
   };
 
   const supprimerTypographie = (index: number) => {
-    if (typographiesData.length > 1) {
-      setTypographiesData(prev => prev.filter((_, i) => i !== index));
+    if (currentClient.data.typographies.length > 1) {
+      const updatedTypos = currentClient.data.typographies.filter((_, i) => i !== index);
+      dispatch(updateClientData({ path: 'data.typographies', value: updatedTypos }));
     }
   };
 
@@ -247,7 +232,7 @@ const DesignBranding: React.FC = () => {
                 <div className="bg-gray-50 rounded-xl p-8 flex items-center justify-center">
                   <div className="text-center">
                     <div className="w-32 h-32 bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl flex items-center justify-center mb-4 mx-auto">
-                      <span className="text-white font-bold text-4xl">CG</span>
+                      <span className="text-white font-bold text-4xl">{currentClient.metadata.nom.charAt(0)}</span>
                     </div>
                     <p className="text-gray-600">Aperçu du logo actuel</p>
                   </div>
@@ -260,7 +245,7 @@ const DesignBranding: React.FC = () => {
               <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm">
                 <h3 className="text-lg font-semibold text-gray-900 mb-4">Nom du logo</h3>
                 <EditableField
-                  value={logoData.nom}
+                  value={currentClient.data.logo.nom}
                   onSave={(value) => updateLogo('nom', value)}
                   placeholder="Nom de votre logo"
                 />
@@ -269,7 +254,7 @@ const DesignBranding: React.FC = () => {
               <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm">
                 <h3 className="text-lg font-semibold text-gray-900 mb-4">Formats disponibles</h3>
                 <EditableField
-                  value={logoData.formats.join(', ')}
+                  value={currentClient.data.logo.formats.join(', ')}
                   onSave={(value) => updateLogo('formats', value)}
                   placeholder="PNG, SVG, PDF..."
                 />
@@ -278,7 +263,7 @@ const DesignBranding: React.FC = () => {
               <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm md:col-span-2">
                 <h3 className="text-lg font-semibold text-gray-900 mb-4">Description</h3>
                 <EditableField
-                  value={logoData.description}
+                  value={currentClient.data.logo.description}
                   onSave={(value) => updateLogo('description', value)}
                   multiline={true}
                   placeholder="Description de votre logo..."
@@ -288,7 +273,7 @@ const DesignBranding: React.FC = () => {
               <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm">
                 <h3 className="text-lg font-semibold text-gray-900 mb-4">Couleurs utilisées</h3>
                 <EditableField
-                  value={logoData.couleurs}
+                  value={currentClient.data.logo.couleurs}
                   onSave={(value) => updateLogo('couleurs', value)}
                   placeholder="Couleurs du logo"
                 />
@@ -297,7 +282,7 @@ const DesignBranding: React.FC = () => {
               <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm">
                 <h3 className="text-lg font-semibold text-gray-900 mb-4">Usage recommandé</h3>
                 <EditableField
-                  value={logoData.usage}
+                  value={currentClient.data.logo.usage}
                   onSave={(value) => updateLogo('usage', value)}
                   placeholder="Où utiliser ce logo"
                 />
@@ -340,13 +325,13 @@ const DesignBranding: React.FC = () => {
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {couleursData
+              {currentClient.data.couleurs
                 .sort((a, b) => a.ordre - b.ordre)
                 .map((couleur, index) => (
                 <div key={index} className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm">
                   <div className="flex justify-between items-start mb-4">
                     <h4 className="text-lg font-semibold text-gray-900">Couleur {couleur.ordre}</h4>
-                    {couleursData.length > 1 && (
+                    {currentClient.data.couleurs.length > 1 && (
                       <button
                         onClick={() => supprimerCouleur(index)}
                         className="text-red-500 hover:text-red-700 transition-colors"
@@ -448,84 +433,87 @@ const DesignBranding: React.FC = () => {
                   <span>Typographies pour les titres</span>
                 </h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {typographiesData
+                  {currentClient.data.typographies
                     .filter(typo => typo.usage === 'titre')
-                    .map((typo, index) => (
-                    <div key={index} className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm">
-                      <div className="flex justify-between items-start mb-4">
-                        <h5 className="text-lg font-semibold text-gray-900">Titre {index + 1}</h5>
-                        {typographiesData.filter(t => t.usage === 'titre').length > 1 && (
-                          <button
-                            onClick={() => supprimerTypographie(typographiesData.indexOf(typo))}
-                            className="text-red-500 hover:text-red-700 transition-colors"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        )}
-                      </div>
-                      
-                      {/* Aperçu de la typographie */}
-                      <div className="mb-4 p-4 bg-gray-50 rounded-lg">
-                        <div 
-                          style={{ 
-                            fontFamily: typo.famille,
-                            fontSize: typo.taille,
-                            fontWeight: typo.poids
-                          }}
-                          className="text-gray-900"
-                        >
-                          Exemple de titre
-                        </div>
-                      </div>
-                      
-                      <div className="space-y-4">
-                        <div>
-                          <label className="block text-sm font-medium text-gray-600 mb-2">Nom</label>
-                          <EditableField
-                            value={typo.nom}
-                            onSave={(value) => updateTypographie(typographiesData.indexOf(typo), 'nom', value)}
-                            placeholder="Nom de la typographie"
-                          />
-                        </div>
-                        
-                        <div>
-                          <label className="block text-sm font-medium text-gray-600 mb-2">Famille de police</label>
-                          <EditableField
-                            value={typo.famille}
-                            onSave={(value) => updateTypographie(typographiesData.indexOf(typo), 'famille', value)}
-                            placeholder="Inter, Arial, etc."
-                          />
-                        </div>
-                        
-                        <div className="grid grid-cols-2 gap-3">
-                          <div>
-                            <label className="block text-sm font-medium text-gray-600 mb-2">Taille</label>
-                            <EditableField
-                              value={typo.taille}
-                              onSave={(value) => updateTypographie(typographiesData.indexOf(typo), 'taille', value)}
-                              placeholder="16px"
-                            />
+                    .map((typo, index) => {
+                      const globalIndex = currentClient.data.typographies.indexOf(typo);
+                      return (
+                        <div key={globalIndex} className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm">
+                          <div className="flex justify-between items-start mb-4">
+                            <h5 className="text-lg font-semibold text-gray-900">Titre {index + 1}</h5>
+                            {currentClient.data.typographies.filter(t => t.usage === 'titre').length > 1 && (
+                              <button
+                                onClick={() => supprimerTypographie(globalIndex)}
+                                className="text-red-500 hover:text-red-700 transition-colors"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </button>
+                            )}
                           </div>
                           
-                          <div>
-                            <label className="block text-sm font-medium text-gray-600 mb-2">Poids</label>
-                            <select
-                              value={typo.poids}
-                              onChange={(e) => updateTypographie(typographiesData.indexOf(typo), 'poids', e.target.value)}
-                              className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          {/* Aperçu de la typographie */}
+                          <div className="mb-4 p-4 bg-gray-50 rounded-lg">
+                            <div 
+                              style={{ 
+                                fontFamily: typo.famille,
+                                fontSize: typo.taille,
+                                fontWeight: typo.poids
+                              }}
+                              className="text-gray-900"
                             >
-                              <option value="300">Light (300)</option>
-                              <option value="400">Regular (400)</option>
-                              <option value="500">Medium (500)</option>
-                              <option value="600">SemiBold (600)</option>
-                              <option value="700">Bold (700)</option>
-                              <option value="800">ExtraBold (800)</option>
-                            </select>
+                              Exemple de titre
+                            </div>
+                          </div>
+                          
+                          <div className="space-y-4">
+                            <div>
+                              <label className="block text-sm font-medium text-gray-600 mb-2">Nom</label>
+                              <EditableField
+                                value={typo.nom}
+                                onSave={(value) => updateTypographie(globalIndex, 'nom', value)}
+                                placeholder="Nom de la typographie"
+                              />
+                            </div>
+                            
+                            <div>
+                              <label className="block text-sm font-medium text-gray-600 mb-2">Famille de police</label>
+                              <EditableField
+                                value={typo.famille}
+                                onSave={(value) => updateTypographie(globalIndex, 'famille', value)}
+                                placeholder="Inter, Arial, etc."
+                              />
+                            </div>
+                            
+                            <div className="grid grid-cols-2 gap-3">
+                              <div>
+                                <label className="block text-sm font-medium text-gray-600 mb-2">Taille</label>
+                                <EditableField
+                                  value={typo.taille}
+                                  onSave={(value) => updateTypographie(globalIndex, 'taille', value)}
+                                  placeholder="16px"
+                                />
+                              </div>
+                              
+                              <div>
+                                <label className="block text-sm font-medium text-gray-600 mb-2">Poids</label>
+                                <select
+                                  value={typo.poids}
+                                  onChange={(e) => updateTypographie(globalIndex, 'poids', e.target.value)}
+                                  className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                >
+                                  <option value="300">Light (300)</option>
+                                  <option value="400">Regular (400)</option>
+                                  <option value="500">Medium (500)</option>
+                                  <option value="600">SemiBold (600)</option>
+                                  <option value="700">Bold (700)</option>
+                                  <option value="800">ExtraBold (800)</option>
+                                </select>
+                              </div>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    </div>
-                  ))}
+                      );
+                    })}
                 </div>
               </div>
 
@@ -536,84 +524,87 @@ const DesignBranding: React.FC = () => {
                   <span>Typographies pour les textes</span>
                 </h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {typographiesData
+                  {currentClient.data.typographies
                     .filter(typo => typo.usage === 'texte')
-                    .map((typo, index) => (
-                    <div key={index} className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm">
-                      <div className="flex justify-between items-start mb-4">
-                        <h5 className="text-lg font-semibold text-gray-900">Texte {index + 1}</h5>
-                        {typographiesData.filter(t => t.usage === 'texte').length > 1 && (
-                          <button
-                            onClick={() => supprimerTypographie(typographiesData.indexOf(typo))}
-                            className="text-red-500 hover:text-red-700 transition-colors"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        )}
-                      </div>
-                      
-                      {/* Aperçu de la typographie */}
-                      <div className="mb-4 p-4 bg-gray-50 rounded-lg">
-                        <div 
-                          style={{ 
-                            fontFamily: typo.famille,
-                            fontSize: typo.taille,
-                            fontWeight: typo.poids
-                          }}
-                          className="text-gray-900"
-                        >
-                          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt.
-                        </div>
-                      </div>
-                      
-                      <div className="space-y-4">
-                        <div>
-                          <label className="block text-sm font-medium text-gray-600 mb-2">Nom</label>
-                          <EditableField
-                            value={typo.nom}
-                            onSave={(value) => updateTypographie(typographiesData.indexOf(typo), 'nom', value)}
-                            placeholder="Nom de la typographie"
-                          />
-                        </div>
-                        
-                        <div>
-                          <label className="block text-sm font-medium text-gray-600 mb-2">Famille de police</label>
-                          <EditableField
-                            value={typo.famille}
-                            onSave={(value) => updateTypographie(typographiesData.indexOf(typo), 'famille', value)}
-                            placeholder="Inter, Arial, etc."
-                          />
-                        </div>
-                        
-                        <div className="grid grid-cols-2 gap-3">
-                          <div>
-                            <label className="block text-sm font-medium text-gray-600 mb-2">Taille</label>
-                            <EditableField
-                              value={typo.taille}
-                              onSave={(value) => updateTypographie(typographiesData.indexOf(typo), 'taille', value)}
-                              placeholder="16px"
-                            />
+                    .map((typo, index) => {
+                      const globalIndex = currentClient.data.typographies.indexOf(typo);
+                      return (
+                        <div key={globalIndex} className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm">
+                          <div className="flex justify-between items-start mb-4">
+                            <h5 className="text-lg font-semibold text-gray-900">Texte {index + 1}</h5>
+                            {currentClient.data.typographies.filter(t => t.usage === 'texte').length > 1 && (
+                              <button
+                                onClick={() => supprimerTypographie(globalIndex)}
+                                className="text-red-500 hover:text-red-700 transition-colors"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </button>
+                            )}
                           </div>
                           
-                          <div>
-                            <label className="block text-sm font-medium text-gray-600 mb-2">Poids</label>
-                            <select
-                              value={typo.poids}
-                              onChange={(e) => updateTypographie(typographiesData.indexOf(typo), 'poids', e.target.value)}
-                              className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          {/* Aperçu de la typographie */}
+                          <div className="mb-4 p-4 bg-gray-50 rounded-lg">
+                            <div 
+                              style={{ 
+                                fontFamily: typo.famille,
+                                fontSize: typo.taille,
+                                fontWeight: typo.poids
+                              }}
+                              className="text-gray-900"
                             >
-                              <option value="300">Light (300)</option>
-                              <option value="400">Regular (400)</option>
-                              <option value="500">Medium (500)</option>
-                              <option value="600">SemiBold (600)</option>
-                              <option value="700">Bold (700)</option>
-                              <option value="800">ExtraBold (800)</option>
-                            </select>
+                              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt.
+                            </div>
+                          </div>
+                          
+                          <div className="space-y-4">
+                            <div>
+                              <label className="block text-sm font-medium text-gray-600 mb-2">Nom</label>
+                              <EditableField
+                                value={typo.nom}
+                                onSave={(value) => updateTypographie(globalIndex, 'nom', value)}
+                                placeholder="Nom de la typographie"
+                              />
+                            </div>
+                            
+                            <div>
+                              <label className="block text-sm font-medium text-gray-600 mb-2">Famille de police</label>
+                              <EditableField
+                                value={typo.famille}
+                                onSave={(value) => updateTypographie(globalIndex, 'famille', value)}
+                                placeholder="Inter, Arial, etc."
+                              />
+                            </div>
+                            
+                            <div className="grid grid-cols-2 gap-3">
+                              <div>
+                                <label className="block text-sm font-medium text-gray-600 mb-2">Taille</label>
+                                <EditableField
+                                  value={typo.taille}
+                                  onSave={(value) => updateTypographie(globalIndex, 'taille', value)}
+                                  placeholder="16px"
+                                />
+                              </div>
+                              
+                              <div>
+                                <label className="block text-sm font-medium text-gray-600 mb-2">Poids</label>
+                                <select
+                                  value={typo.poids}
+                                  onChange={(e) => updateTypographie(globalIndex, 'poids', e.target.value)}
+                                  className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                >
+                                  <option value="300">Light (300)</option>
+                                  <option value="400">Regular (400)</option>
+                                  <option value="500">Medium (500)</option>
+                                  <option value="600">SemiBold (600)</option>
+                                  <option value="700">Bold (700)</option>
+                                  <option value="800">ExtraBold (800)</option>
+                                </select>
+                              </div>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    </div>
-                  ))}
+                      );
+                    })}
                 </div>
               </div>
             </div>
@@ -644,7 +635,7 @@ const DesignBranding: React.FC = () => {
             </div>
             <div>
               <h1 className="text-4xl font-bold text-white mb-2">Design & Branding</h1>
-              <p className="text-blue-100 text-lg">Gérez votre identité visuelle et vos éléments graphiques</p>
+              <p className="text-blue-100 text-lg">Gérez l'identité visuelle de {currentClient.metadata.nom}</p>
             </div>
           </div>
           
@@ -681,6 +672,7 @@ const DesignBranding: React.FC = () => {
                         <p>• Définissez taille, poids et famille de police</p>
                         <p>• Prévisualisez en temps réel vos choix</p>
                         <p>• Maintenez la cohérence de votre identité</p>
+                        <p>• Les modifications sont automatiquement sauvegardées</p>
                       </div>
                       {/* Flèche du tooltip */}
                       <div className="absolute top-full right-4 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>

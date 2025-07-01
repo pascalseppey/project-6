@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { MapPin, Plus, Building, Phone, Globe, Star, Clock, Calendar, Edit3, Save, X, Info, Trash2 } from 'lucide-react';
+import { useAppSelector, useAppDispatch } from '../../hooks';
+import { updateClientData } from '../../store/slices/currentClientSlice';
 
 interface EditableFieldProps {
   value: string;
@@ -96,7 +98,7 @@ const EditableField: React.FC<EditableFieldProps> = ({
           {value ? (
             <div className={`text-gray-900 ${
               isTitle 
-                ? 'text-2xl font-bold' 
+                ? 'text-xl font-bold' 
                 : multiline 
                   ? 'text-base leading-relaxed' 
                   : 'text-base'
@@ -105,7 +107,7 @@ const EditableField: React.FC<EditableFieldProps> = ({
             </div>
           ) : (
             <div className={`text-gray-400 italic ${
-              isTitle ? 'text-2xl' : 'text-base'
+              isTitle ? 'text-xl' : 'text-base'
             }`}>
               {placeholder}
             </div>
@@ -117,121 +119,30 @@ const EditableField: React.FC<EditableFieldProps> = ({
   );
 };
 
-interface GMBFiche {
-  id: string;
-  nom: string;
-  commune: string;
-  infos: {
-    nomFiche: string;
-    categorie: string;
-    description: string;
-    lien: string;
-  };
-  contact: {
-    siteWeb: string;
-    telephone: string;
-    commune: string;
-    adresse: string;
-    canton: string;
-  };
-  avis: Array<{
-    nom: string;
-    prenom: string;
-    date: string;
-    note: number;
-    commentaire: string;
-  }>;
-  horaires: Array<{
-    jour: string;
-    ouvert: boolean;
-    heureOuverture: string;
-    heureFermeture: string;
-  }>;
-  joursFeries: Array<{
-    nom: string;
-    date: string;
-    ferme: boolean;
-    horaireSpecial: string;
-  }>;
-}
-
 const Localisation: React.FC = () => {
   const [activeFiche, setActiveFiche] = useState(0);
   const [activeTab, setActiveTab] = useState('Infos');
+  const dispatch = useAppDispatch();
   
-  // État pour les fiches GMB
-  const [fichesList, setFichesList] = useState<GMBFiche[]>([
-    {
-      id: '1',
-      nom: 'Siège',
-      commune: 'Lausanne',
-      infos: {
-        nomFiche: 'Charly Gaillard SARL - Siège',
-        categorie: 'Agence de marketing digital',
-        description: 'Spécialiste en développement web et marketing digital. Nous accompagnons les PME dans leur transformation numérique.',
-        lien: 'https://charlygaillard.ch'
-      },
-      contact: {
-        siteWeb: 'https://charlygaillard.ch',
-        telephone: '+41 79 123 45 67',
-        commune: 'Lausanne',
-        adresse: 'Rue de la Paix 15',
-        canton: 'Vaud'
-      },
-      avis: [
-        {
-          nom: 'Martin',
-          prenom: 'Sophie',
-          date: '2024-12-15',
-          note: 5,
-          commentaire: 'Excellent service, très professionnel et à l\'écoute de nos besoins. Je recommande vivement cette agence pour tous vos projets digitaux.'
-        },
-        {
-          nom: 'Dubois',
-          prenom: 'Pierre',
-          date: '2024-12-10',
-          note: 4,
-          commentaire: 'Très satisfait du site web créé pour notre entreprise. Équipe compétente et délais respectés.'
-        },
-        {
-          nom: 'Leroy',
-          prenom: 'Marie',
-          date: '2024-12-05',
-          note: 5,
-          commentaire: 'Service impeccable ! Notre visibilité en ligne a considérablement augmenté grâce à leur expertise.'
-        },
-        {
-          nom: 'Bernard',
-          prenom: 'Jean',
-          date: '2024-11-28',
-          note: 4,
-          commentaire: 'Bon travail sur notre stratégie SEO. Les résultats sont au rendez-vous.'
-        },
-        {
-          nom: 'Moreau',
-          prenom: 'Claire',
-          date: '2024-11-20',
-          note: 5,
-          commentaire: 'Accompagnement personnalisé et solutions innovantes. Parfait pour notre transformation digitale.'
-        }
-      ],
-      horaires: [
-        { jour: 'Lundi', ouvert: true, heureOuverture: '09:00', heureFermeture: '18:00' },
-        { jour: 'Mardi', ouvert: true, heureOuverture: '09:00', heureFermeture: '18:00' },
-        { jour: 'Mercredi', ouvert: true, heureOuverture: '09:00', heureFermeture: '18:00' },
-        { jour: 'Jeudi', ouvert: true, heureOuverture: '09:00', heureFermeture: '18:00' },
-        { jour: 'Vendredi', ouvert: true, heureOuverture: '09:00', heureFermeture: '17:00' },
-        { jour: 'Samedi', ouvert: false, heureOuverture: '', heureFermeture: '' },
-        { jour: 'Dimanche', ouvert: false, heureOuverture: '', heureFermeture: '' }
-      ],
-      joursFeries: [
-        { nom: 'Nouvel An', date: '2025-01-01', ferme: true, horaireSpecial: '' },
-        { nom: 'Fête du Travail', date: '2025-05-01', ferme: true, horaireSpecial: '' },
-        { nom: 'Fête Nationale', date: '2025-08-01', ferme: true, horaireSpecial: '' },
-        { nom: 'Noël', date: '2025-12-25', ferme: true, horaireSpecial: '' }
-      ]
-    }
-  ]);
+  // Récupérer les données depuis Redux
+  const currentClient = useAppSelector(state => state.currentClient.data);
+  
+  // Si pas de client chargé, afficher un message
+  if (!currentClient) {
+    return (
+      <div className="p-8">
+        <div className="text-center py-12">
+          <div className="text-gray-400 mb-4">
+            <MapPin className="w-16 h-16 mx-auto" />
+          </div>
+          <p className="text-gray-500 mb-4">Aucun client sélectionné</p>
+          <p className="text-sm text-gray-400">Sélectionnez un client dans le menu en haut à droite</p>
+        </div>
+      </div>
+    );
+  }
+
+  const fichesList = currentClient.data.fichesList;
 
   const tabs = [
     { id: 'Infos', label: 'Infos', icon: Building },
@@ -242,7 +153,7 @@ const Localisation: React.FC = () => {
   ];
 
   const ajouterFiche = () => {
-    const nouvelleFiche: GMBFiche = {
+    const nouvelleFiche = {
       id: Date.now().toString(),
       nom: `Succursale ${fichesList.length}`,
       commune: '',
@@ -277,14 +188,15 @@ const Localisation: React.FC = () => {
       ]
     };
     
-    setFichesList([...fichesList, nouvelleFiche]);
+    const updatedFiches = [...fichesList, nouvelleFiche];
+    dispatch(updateClientData({ path: 'data.fichesList', value: updatedFiches }));
     setActiveFiche(fichesList.length);
   };
 
   const supprimerFiche = (index: number) => {
     if (fichesList.length > 1) {
       const nouvellesList = fichesList.filter((_, i) => i !== index);
-      setFichesList(nouvellesList);
+      dispatch(updateClientData({ path: 'data.fichesList', value: nouvellesList }));
       if (activeFiche >= nouvellesList.length) {
         setActiveFiche(nouvellesList.length - 1);
       }
@@ -300,7 +212,7 @@ const Localisation: React.FC = () => {
         [field]: value
       }
     };
-    setFichesList(updatedFiches);
+    dispatch(updateClientData({ path: 'data.fichesList', value: updatedFiches }));
   };
 
   const updateFicheContact = (field: string, value: string) => {
@@ -312,7 +224,7 @@ const Localisation: React.FC = () => {
         [field]: value
       }
     };
-    setFichesList(updatedFiches);
+    dispatch(updateClientData({ path: 'data.fichesList', value: updatedFiches }));
   };
 
   const updateFicheHoraire = (index: number, field: string, value: string | boolean) => {
@@ -321,7 +233,7 @@ const Localisation: React.FC = () => {
       ...updatedFiches[activeFiche].horaires[index],
       [field]: value
     };
-    setFichesList(updatedFiches);
+    dispatch(updateClientData({ path: 'data.fichesList', value: updatedFiches }));
   };
 
   const ajouterAvis = () => {
@@ -333,7 +245,7 @@ const Localisation: React.FC = () => {
       note: 5,
       commentaire: ''
     });
-    setFichesList(updatedFiches);
+    dispatch(updateClientData({ path: 'data.fichesList', value: updatedFiches }));
   };
 
   const updateAvis = (index: number, field: string, value: string | number) => {
@@ -342,13 +254,13 @@ const Localisation: React.FC = () => {
       ...updatedFiches[activeFiche].avis[index],
       [field]: value
     };
-    setFichesList(updatedFiches);
+    dispatch(updateClientData({ path: 'data.fichesList', value: updatedFiches }));
   };
 
   const supprimerAvis = (index: number) => {
     const updatedFiches = [...fichesList];
     updatedFiches[activeFiche].avis = updatedFiches[activeFiche].avis.filter((_, i) => i !== index);
-    setFichesList(updatedFiches);
+    dispatch(updateClientData({ path: 'data.fichesList', value: updatedFiches }));
   };
 
   // Calcul du score global et nombre d'avis
@@ -734,7 +646,7 @@ const Localisation: React.FC = () => {
             </div>
             <div>
               <h1 className="text-4xl font-bold text-white mb-2">Localisation</h1>
-              <p className="text-blue-100 text-lg">Gérez vos fiches Google My Business</p>
+              <p className="text-blue-100 text-lg">Gérez les fiches Google My Business de {currentClient.metadata.nom}</p>
             </div>
           </div>
           
@@ -812,6 +724,7 @@ const Localisation: React.FC = () => {
                         <p>• Vous pouvez ajouter des fermetures spéciales</p>
                         <p>• Définissez des horaires réduits si nécessaire</p>
                         <p>• Les modifications s'appliquent à la fiche sélectionnée</p>
+                        <p>• Toutes les modifications sont automatiquement sauvegardées</p>
                       </div>
                       {/* Flèche du tooltip */}
                       <div className="absolute top-full right-4 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
