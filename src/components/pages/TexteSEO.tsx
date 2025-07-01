@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Edit3, Type, Search, Save, X, Plus, Trash2, Copy, CheckCircle, AlertTriangle, FileText, Key, Tag } from 'lucide-react';
 import { ContentBlock } from '../types/builder';
-import ContentBlockItem from '../builder/ContentBlockItem';
+import ContentBlockItem from '../ContentBlockItem';
 
 interface Page {
   id: string;
