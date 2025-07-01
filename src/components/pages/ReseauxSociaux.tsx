@@ -1,20 +1,17 @@
 import React, { useState } from 'react';
-import { Share2, Plus, ExternalLink, Users, Calendar, Edit3, Save, X, Info, Trash2, TrendingUp } from 'lucide-react';
+import { Share2, Plus, ExternalLink, Users, Calendar, Edit3, TrendingUp, Settings, Link } from 'lucide-react';
+import { FaFacebook, FaLinkedin, FaInstagram, FaTwitter, FaYoutube, FaTiktok, FaPinterest } from 'react-icons/fa';
 
 interface EditableFieldProps {
   value: string;
   onSave: (newValue: string) => void;
-  multiline?: boolean;
   placeholder?: string;
-  isTitle?: boolean;
 }
 
 const EditableField: React.FC<EditableFieldProps> = ({ 
   value, 
   onSave, 
-  multiline = false, 
-  placeholder = "Cliquez pour modifier...",
-  isTitle = false
+  placeholder = "Cliquez pour modifier..."
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editValue, setEditValue] = useState(value);
@@ -30,7 +27,7 @@ const EditableField: React.FC<EditableFieldProps> = ({
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !multiline) {
+    if (e.key === 'Enter') {
       e.preventDefault();
       handleSave();
     }
@@ -41,48 +38,16 @@ const EditableField: React.FC<EditableFieldProps> = ({
 
   if (isEditing) {
     return (
-      <div className="relative">
-        {multiline ? (
-          <textarea
-            value={editValue}
-            onChange={(e) => setEditValue(e.target.value)}
-            onKeyDown={handleKeyDown}
-            className="w-full p-3 border-2 border-blue-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none text-gray-900"
-            rows={multiline ? 4 : 1}
-            placeholder={placeholder}
-            autoFocus
-          />
-        ) : (
-          <input
-            type="text"
-            value={editValue}
-            onChange={(e) => setEditValue(e.target.value)}
-            onKeyDown={handleKeyDown}
-            className={`w-full p-3 border-2 border-blue-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 ${
-              isTitle ? 'text-xl font-semibold' : ''
-            }`}
-            placeholder={placeholder}
-            autoFocus
-          />
-        )}
-        
-        <div className="flex items-center space-x-2 mt-3">
-          <button
-            onClick={handleSave}
-            className="flex items-center space-x-1 bg-green-600 text-white px-3 py-1.5 rounded-lg text-sm font-medium hover:bg-green-700 transition-colors"
-          >
-            <Save className="w-4 h-4" />
-            <span>Sauvegarder</span>
-          </button>
-          <button
-            onClick={handleCancel}
-            className="flex items-center space-x-1 bg-gray-500 text-white px-3 py-1.5 rounded-lg text-sm font-medium hover:bg-gray-600 transition-colors"
-          >
-            <X className="w-4 h-4" />
-            <span>Annuler</span>
-          </button>
-        </div>
-      </div>
+      <input
+        type="text"
+        value={editValue}
+        onChange={(e) => setEditValue(e.target.value)}
+        onKeyDown={handleKeyDown}
+        onBlur={handleSave}
+        className="w-full p-2 border-2 border-blue-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 font-medium"
+        placeholder={placeholder}
+        autoFocus
+      />
     );
   }
 
@@ -91,22 +56,14 @@ const EditableField: React.FC<EditableFieldProps> = ({
       className="group relative cursor-pointer"
       onClick={() => setIsEditing(true)}
     >
-      <div className="flex items-start justify-between">
+      <div className="flex items-center justify-between">
         <div className="flex-1">
           {value ? (
-            <div className={`text-gray-900 ${
-              isTitle 
-                ? 'text-2xl font-bold' 
-                : multiline 
-                  ? 'text-base leading-relaxed' 
-                  : 'text-base'
-            }`}>
+            <div className="text-gray-900 font-medium hover:text-blue-600 transition-colors">
               {value}
             </div>
           ) : (
-            <div className={`text-gray-400 italic ${
-              isTitle ? 'text-2xl' : 'text-base'
-            }`}>
+            <div className="text-gray-400 italic">
               {placeholder}
             </div>
           )}
@@ -121,12 +78,9 @@ interface ReseauSocial {
   id: string;
   nom: string;
   plateforme: string;
-  logo: string;
-  couleur: string;
   lien: string;
   followers: number;
   postsParSemaine: number;
-  description: string;
   actif: boolean;
 }
 
@@ -139,48 +93,36 @@ const ReseauxSociaux: React.FC = () => {
       id: '1',
       nom: 'Charly Gaillard',
       plateforme: 'LinkedIn',
-      logo: '/logo_linkedin.png',
-      couleur: '#0077B5',
       lien: 'https://linkedin.com/in/charlygaillard',
       followers: 1250,
       postsParSemaine: 3,
-      description: 'Profil professionnel pour le networking et le partage d\'expertise',
       actif: true
     },
     {
       id: '2',
       nom: '@charlygaillard_dev',
       plateforme: 'Instagram',
-      logo: '/logo_instagram.png',
-      couleur: '#E4405F',
       lien: 'https://instagram.com/charlygaillard_dev',
       followers: 850,
       postsParSemaine: 4,
-      description: 'Contenu visuel sur les projets et coulisses du développement',
       actif: true
     },
     {
       id: '3',
       nom: 'Charly Gaillard SARL',
       plateforme: 'Facebook',
-      logo: '/logo_facebook.png',
-      couleur: '#1877F2',
       lien: 'https://facebook.com/charlygaillard.sarl',
       followers: 420,
       postsParSemaine: 2,
-      description: 'Page entreprise pour les actualités et témoignages clients',
       actif: true
     },
     {
       id: '4',
       nom: '@CharlyCodes',
       plateforme: 'Twitter',
-      logo: '/logo_twitter.png',
-      couleur: '#1DA1F2',
       lien: 'https://twitter.com/charlycodes',
       followers: 680,
       postsParSemaine: 5,
-      description: 'Veille technologique et partage de tips développement',
       actif: false
     }
   ]);
@@ -207,17 +149,51 @@ const ReseauxSociaux: React.FC = () => {
     { id: 'Statistiques', label: 'Statistiques', icon: Users },
   ];
 
+  const getPlatformIcon = (plateforme: string) => {
+    const iconProps = { size: 24, className: "text-white" };
+    
+    switch (plateforme) {
+      case 'LinkedIn':
+        return <FaLinkedin {...iconProps} />;
+      case 'Instagram':
+        return <FaInstagram {...iconProps} />;
+      case 'Facebook':
+        return <FaFacebook {...iconProps} />;
+      case 'Twitter':
+        return <FaTwitter {...iconProps} />;
+      case 'YouTube':
+        return <FaYoutube {...iconProps} />;
+      case 'TikTok':
+        return <FaTiktok {...iconProps} />;
+      case 'Pinterest':
+        return <FaPinterest {...iconProps} />;
+      default:
+        return <Share2 {...iconProps} />;
+    }
+  };
+
+  const getPlatformColor = (plateforme: string) => {
+    const colors: { [key: string]: string } = {
+      'LinkedIn': '#0077B5',
+      'Instagram': '#E4405F',
+      'Facebook': '#1877F2',
+      'Twitter': '#1DA1F2',
+      'YouTube': '#FF0000',
+      'TikTok': '#000000',
+      'Pinterest': '#BD081C',
+      'Autre': '#6B7280'
+    };
+    return colors[plateforme] || '#6B7280';
+  };
+
   const ajouterReseau = () => {
     const nouveauReseau: ReseauSocial = {
       id: Date.now().toString(),
       nom: 'Nouveau compte',
       plateforme: 'Autre',
-      logo: '🌐',
-      couleur: '#6B7280',
       lien: '',
       followers: 0,
       postsParSemaine: 1,
-      description: '',
       actif: true
     };
     setReseauxData([...reseauxData, nouveauReseau]);
@@ -239,34 +215,6 @@ const ReseauxSociaux: React.FC = () => {
     setStrategieData(prev => ({ ...prev, [field]: value }));
   };
 
-  const getPlatformColor = (plateforme: string) => {
-    const colors: { [key: string]: string } = {
-      'LinkedIn': '#0077B5',
-      'Instagram': '#E4405F',
-      'Facebook': '#1877F2',
-      'Twitter': '#1DA1F2',
-      'YouTube': '#FF0000',
-      'TikTok': '#000000',
-      'Pinterest': '#BD081C',
-      'Autre': '#6B7280'
-    };
-    return colors[plateforme] || '#6B7280';
-  };
-
-  const getPlatformLogo = (plateforme: string) => {
-    const logos: { [key: string]: string } = {
-      'LinkedIn': '/logo_linkedin.png',
-      'Instagram': '/logo_instagram.png',
-      'Facebook': '/logo_facebook.png',
-      'Twitter': '/logo_twitter.png',
-      'YouTube': '/logo_youtube.png',
-      'TikTok': '/logo_tiktok.png',
-      'Pinterest': '/logo_pinterest.png',
-      'Autre': '🌐'
-    };
-    return logos[plateforme] || '🌐';
-  };
-
   const renderTabContent = () => {
     switch (activeTab) {
       case 'Comptes':
@@ -283,7 +231,7 @@ const ReseauxSociaux: React.FC = () => {
               </button>
             </div>
             
-            {/* Présentation horizontale des réseaux sociaux */}
+            {/* Présentation horizontale simplifiée des réseaux sociaux */}
             <div className="space-y-4">
               {reseauxData.map((reseau, index) => (
                 <div key={reseau.id} className={`bg-white rounded-2xl p-6 border-2 shadow-sm transition-all duration-200 ${
@@ -291,44 +239,53 @@ const ReseauxSociaux: React.FC = () => {
                     ? 'border-green-200 hover:shadow-lg' 
                     : 'border-gray-200 opacity-75'
                 }`}>
-                  {/* Header horizontal avec logo, nom et statut */}
-                  <div className="flex items-center justify-between mb-6">
-                    <div className="flex items-center space-x-4">
-                      {/* Logo du réseau social */}
-                      <div className="w-16 h-16 rounded-xl overflow-hidden border border-gray-200 flex items-center justify-center bg-white">
-                        {reseau.logo.startsWith('/') ? (
-                          <img 
-                            src={reseau.logo} 
-                            alt={`Logo ${reseau.plateforme}`}
-                            className="w-12 h-12 object-contain"
-                          />
-                        ) : (
-                          <span className="text-2xl">{reseau.logo}</span>
-                        )}
+                  
+                  {/* Layout horizontal compact */}
+                  <div className="flex items-center justify-between">
+                    {/* Logo + Nom du compte (éditable) */}
+                    <div className="flex items-center space-x-4 flex-1">
+                      {/* Logo du réseau social avec couleur de la plateforme */}
+                      <div 
+                        className="w-12 h-12 rounded-xl flex items-center justify-center"
+                        style={{ backgroundColor: getPlatformColor(reseau.plateforme) }}
+                      >
+                        {getPlatformIcon(reseau.plateforme)}
                       </div>
                       
-                      {/* Informations principales */}
-                      <div>
-                        <h4 className="text-xl font-bold text-gray-900">{reseau.plateforme}</h4>
-                        <p className="text-gray-600 font-medium">{reseau.nom}</p>
-                        <div className="flex items-center space-x-2 mt-1">
-                          <div className={`w-2 h-2 rounded-full ${reseau.actif ? 'bg-green-500' : 'bg-gray-400'}`}></div>
-                          <span className={`text-sm font-medium ${reseau.actif ? 'text-green-600' : 'text-gray-500'}`}>
-                            {reseau.actif ? 'Actif' : 'Inactif'}
-                          </span>
-                        </div>
+                      {/* Nom du compte éditable */}
+                      <div className="flex-1 max-w-xs">
+                        <EditableField
+                          value={reseau.nom}
+                          onSave={(value) => updateReseau(index, 'nom', value)}
+                          placeholder="Nom du compte"
+                        />
+                        <div className="text-sm text-gray-500 mt-1">{reseau.plateforme}</div>
+                      </div>
+                    </div>
+                    
+                    {/* Statistiques (non éditables) */}
+                    <div className="flex items-center space-x-8">
+                      <div className="text-center">
+                        <div className="text-2xl font-bold text-blue-600">{reseau.followers.toLocaleString()}</div>
+                        <div className="text-sm text-gray-600">Followers</div>
+                      </div>
+                      
+                      <div className="text-center">
+                        <div className="text-2xl font-bold text-green-600">{reseau.postsParSemaine}</div>
+                        <div className="text-sm text-gray-600">Posts/semaine</div>
                       </div>
                     </div>
                     
                     {/* Actions */}
                     <div className="flex items-center space-x-3">
-                      {/* Lien externe */}
+                      {/* Lien direct */}
                       {reseau.lien && (
                         <a
                           href={reseau.lien}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="p-3 text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-xl transition-colors"
+                          title="Ouvrir le profil"
                         >
                           <ExternalLink className="w-5 h-5" />
                         </a>
@@ -342,8 +299,17 @@ const ReseauxSociaux: React.FC = () => {
                             ? 'bg-green-100 text-green-600 hover:bg-green-200' 
                             : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                         }`}
+                        title={reseau.actif ? 'Désactiver' : 'Activer'}
                       >
                         <Users className="w-5 h-5" />
+                      </button>
+                      
+                      {/* Bouton de connexion/paramètres */}
+                      <button
+                        className="p-3 text-purple-600 hover:text-purple-700 hover:bg-purple-50 rounded-xl transition-colors"
+                        title="Paramètres de connexion"
+                      >
+                        <Link className="w-5 h-5" />
                       </button>
                       
                       {/* Supprimer */}
@@ -351,50 +317,23 @@ const ReseauxSociaux: React.FC = () => {
                         <button
                           onClick={() => supprimerReseau(index)}
                           className="p-3 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-xl transition-colors"
+                          title="Supprimer"
                         >
-                          <Trash2 className="w-5 h-5" />
+                          <Users className="w-5 h-5" />
                         </button>
                       )}
                     </div>
                   </div>
                   
-                  {/* Contenu horizontal */}
-                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    {/* Statistiques */}
-                    <div className="bg-gray-50 rounded-xl p-4">
-                      <h5 className="text-sm font-semibold text-gray-700 mb-3">Statistiques</h5>
-                      <div className="grid grid-cols-2 gap-4">
-                        <div className="text-center">
-                          <div className="text-2xl font-bold text-blue-600">{reseau.followers.toLocaleString()}</div>
-                          <div className="text-xs text-gray-600">Followers</div>
-                        </div>
-                        <div className="text-center">
-                          <div className="text-2xl font-bold text-green-600">{reseau.postsParSemaine}</div>
-                          <div className="text-xs text-gray-600">Posts/semaine</div>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    {/* Configuration */}
-                    <div className="space-y-4">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-600 mb-2">Nom du compte</label>
-                        <EditableField
-                          value={reseau.nom}
-                          onSave={(value) => updateReseau(index, 'nom', value)}
-                          placeholder="Nom du compte"
-                        />
-                      </div>
-                      
+                  {/* Configuration rapide en dessous */}
+                  <div className="mt-4 pt-4 border-t border-gray-200">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      {/* Plateforme */}
                       <div>
                         <label className="block text-sm font-medium text-gray-600 mb-2">Plateforme</label>
                         <select
                           value={reseau.plateforme}
-                          onChange={(e) => {
-                            updateReseau(index, 'plateforme', e.target.value);
-                            updateReseau(index, 'couleur', getPlatformColor(e.target.value));
-                            updateReseau(index, 'logo', getPlatformLogo(e.target.value));
-                          }}
+                          onChange={(e) => updateReseau(index, 'plateforme', e.target.value)}
                           className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
                         >
                           <option value="LinkedIn">LinkedIn</option>
@@ -407,56 +346,19 @@ const ReseauxSociaux: React.FC = () => {
                           <option value="Autre">Autre</option>
                         </select>
                       </div>
-                    </div>
-                    
-                    {/* Description et paramètres */}
-                    <div className="space-y-4">
-                      <div>
+                      
+                      {/* Lien vers le profil */}
+                      <div className="md:col-span-2">
                         <label className="block text-sm font-medium text-gray-600 mb-2">Lien vers le profil</label>
-                        <EditableField
+                        <input
+                          type="url"
                           value={reseau.lien}
-                          onSave={(value) => updateReseau(index, 'lien', value)}
+                          onChange={(e) => updateReseau(index, 'lien', e.target.value)}
                           placeholder="https://..."
+                          className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
                         />
                       </div>
-                      
-                      <div className="grid grid-cols-2 gap-3">
-                        <div>
-                          <label className="block text-sm font-medium text-gray-600 mb-2">Followers</label>
-                          <input
-                            type="number"
-                            value={reseau.followers}
-                            onChange={(e) => updateReseau(index, 'followers', parseInt(e.target.value) || 0)}
-                            className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-                            placeholder="0"
-                          />
-                        </div>
-                        
-                        <div>
-                          <label className="block text-sm font-medium text-gray-600 mb-2">Posts/semaine</label>
-                          <input
-                            type="number"
-                            value={reseau.postsParSemaine}
-                            onChange={(e) => updateReseau(index, 'postsParSemaine', parseInt(e.target.value) || 0)}
-                            className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-                            placeholder="0"
-                            min="0"
-                            max="20"
-                          />
-                        </div>
-                      </div>
                     </div>
-                  </div>
-                  
-                  {/* Description complète */}
-                  <div className="mt-4 pt-4 border-t border-gray-200">
-                    <label className="block text-sm font-medium text-gray-600 mb-2">Description</label>
-                    <EditableField
-                      value={reseau.description}
-                      onSave={(value) => updateReseau(index, 'description', value)}
-                      multiline={true}
-                      placeholder="Description de l'usage de ce compte..."
-                    />
                   </div>
                 </div>
               ))}
@@ -469,41 +371,45 @@ const ReseauxSociaux: React.FC = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Objectifs</h3>
-              <EditableField
+              <textarea
                 value={strategieData.objectifs}
-                onSave={(value) => updateStrategie('objectifs', value)}
-                multiline={true}
+                onChange={(e) => updateStrategie('objectifs', e.target.value)}
                 placeholder="Quels sont vos objectifs sur les réseaux sociaux ?"
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                rows={4}
               />
             </div>
             
             <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Audience cible</h3>
-              <EditableField
+              <textarea
                 value={strategieData.cibleAudience}
-                onSave={(value) => updateStrategie('cibleAudience', value)}
-                multiline={true}
+                onChange={(e) => updateStrategie('cibleAudience', e.target.value)}
                 placeholder="Qui voulez-vous atteindre ?"
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                rows={4}
               />
             </div>
             
             <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Tonalité</h3>
-              <EditableField
+              <textarea
                 value={strategieData.tonalite}
-                onSave={(value) => updateStrategie('tonalite', value)}
-                multiline={true}
+                onChange={(e) => updateStrategie('tonalite', e.target.value)}
                 placeholder="Quel ton adopter dans vos communications ?"
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                rows={4}
               />
             </div>
             
             <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Fréquence globale</h3>
-              <EditableField
+              <textarea
                 value={strategieData.frequenceGlobale}
-                onSave={(value) => updateStrategie('frequenceGlobale', value)}
-                multiline={true}
+                onChange={(e) => updateStrategie('frequenceGlobale', e.target.value)}
                 placeholder="Combien de posts par semaine au total ?"
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                rows={4}
               />
             </div>
             
@@ -515,16 +421,11 @@ const ReseauxSociaux: React.FC = () => {
                   .filter(reseau => reseau.actif)
                   .map((reseau, index) => (
                   <div key={reseau.id} className="text-center p-4 bg-white rounded-xl border border-gray-200">
-                    <div className="w-12 h-12 rounded-xl overflow-hidden border border-gray-200 flex items-center justify-center bg-white mx-auto mb-2">
-                      {reseau.logo.startsWith('/') ? (
-                        <img 
-                          src={reseau.logo} 
-                          alt={`Logo ${reseau.plateforme}`}
-                          className="w-8 h-8 object-contain"
-                        />
-                      ) : (
-                        <span className="text-xl">{reseau.logo}</span>
-                      )}
+                    <div 
+                      className="w-12 h-12 rounded-xl flex items-center justify-center mx-auto mb-2"
+                      style={{ backgroundColor: getPlatformColor(reseau.plateforme) }}
+                    >
+                      {getPlatformIcon(reseau.plateforme)}
                     </div>
                     <div className="text-sm font-medium text-gray-700">{reseau.plateforme}</div>
                     <div className="text-2xl font-bold text-gray-900">{reseau.postsParSemaine}</div>
@@ -593,16 +494,11 @@ const ReseauxSociaux: React.FC = () => {
                   .map((reseau, index) => (
                   <div key={reseau.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
                     <div className="flex items-center space-x-4">
-                      <div className="w-12 h-12 rounded-xl overflow-hidden border border-gray-200 flex items-center justify-center bg-white">
-                        {reseau.logo.startsWith('/') ? (
-                          <img 
-                            src={reseau.logo} 
-                            alt={`Logo ${reseau.plateforme}`}
-                            className="w-8 h-8 object-contain"
-                          />
-                        ) : (
-                          <span className="text-xl">{reseau.logo}</span>
-                        )}
+                      <div 
+                        className="w-12 h-12 rounded-xl flex items-center justify-center"
+                        style={{ backgroundColor: getPlatformColor(reseau.plateforme) }}
+                      >
+                        {getPlatformIcon(reseau.plateforme)}
                       </div>
                       <div>
                         <div className="font-semibold text-gray-900">{reseau.plateforme}</div>
@@ -706,27 +602,6 @@ const ReseauxSociaux: React.FC = () => {
             
             return (
               <div key={tab.id} className="flex-1 relative">
-                {/* Icône d'information pour Statistiques */}
-                {tab.id === 'Statistiques' && (
-                  <div className="absolute -top-6 right-2 group">
-                    <Info 
-                      className="w-4 h-4 text-gray-400 hover:text-blue-600 cursor-help transition-colors" 
-                    />
-                    {/* Tooltip */}
-                    <div className="absolute bottom-full right-0 mb-2 w-80 bg-gray-900 text-white text-sm rounded-lg p-3 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-                      <div className="space-y-1">
-                        <p className="font-semibold">Suivi des performances</p>
-                        <p>• Analysez vos followers et engagement</p>
-                        <p>• Comparez les performances par réseau</p>
-                        <p>• Obtenez des recommandations personnalisées</p>
-                        <p>• Optimisez votre stratégie social media</p>
-                      </div>
-                      {/* Flèche du tooltip */}
-                      <div className="absolute top-full right-4 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
-                    </div>
-                  </div>
-                )}
-                
                 <button
                   onClick={() => setActiveTab(tab.id)}
                   className={`w-full flex items-center justify-center space-x-3 px-4 py-4 text-sm font-medium rounded-lg transition-all duration-200 ${
