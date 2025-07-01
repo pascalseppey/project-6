@@ -386,21 +386,24 @@ const InfosGenerales: React.FC = () => {
         </div>
       </div>
 
-      {/* Menu horizontal des onglets */}
+      {/* Menu horizontal des onglets avec espacement amélioré */}
       <div className="mb-8">
-        <nav className="flex space-x-1 bg-gray-100 p-1 rounded-xl" aria-label="Tabs">
-          {tabs.map((tab) => {
+        <nav className="flex bg-gray-100 p-1 rounded-xl" aria-label="Tabs">
+          {tabs.map((tab, index) => {
             const Icon = tab.icon;
             const isActive = activeTab === tab.id;
+            const isLast = index === tabs.length - 1;
             
             return (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center space-x-3 px-6 py-3 text-sm font-medium rounded-lg transition-all duration-200 ${
+                className={`flex items-center space-x-3 px-8 py-4 text-sm font-medium rounded-lg transition-all duration-200 ${
                   isActive
                     ? 'bg-gradient-to-r from-blue-600 via-blue-700 to-blue-800 text-white shadow-lg'
                     : 'text-gray-700 hover:text-gray-900 hover:bg-white'
+                } ${
+                  isLast ? 'ml-auto' : 'mr-2'
                 }`}
               >
                 <Icon className={`w-5 h-5 ${isActive ? 'text-white' : 'text-gray-500'}`} />
