@@ -216,7 +216,7 @@ export const useClientManager = () => {
             nom: clientName,
             plateforme: 'Facebook',
             lien: 'waiting_for_data',
-            followers: 0000,
+            followers: 0,
             postsParSemaine: 2,
             actif: true
           },
@@ -225,7 +225,7 @@ export const useClientManager = () => {
             nom: clientName,
             plateforme: 'LinkedIn',
             lien: 'waiting_for_data',
-            followers: 0000,
+            followers: 0,
             postsParSemaine: 3,
             actif: true
           },
@@ -234,7 +234,7 @@ export const useClientManager = () => {
             nom: clientName,
             plateforme: 'Instagram',
             lien: 'waiting_for_data',
-            followers: 0000,
+            followers: 0,
             postsParSemaine: 4,
             actif: true
           }
