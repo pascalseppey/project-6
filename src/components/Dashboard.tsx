@@ -5,6 +5,7 @@ import DashboardPage from './pages/DashboardPage';
 import InfosGenerales from './pages/InfosGenerales';
 import Localisation from './pages/Localisation';
 import DesignBranding from './pages/DesignBranding';
+import ReseauxSociaux from './pages/ReseauxSociaux';
 
 const Dashboard = () => {
   const [activeTab, setActiveTab] = useState('Dashboard');
@@ -89,6 +90,8 @@ const Dashboard = () => {
         return <Localisation />;
       case 'Design & Branding':
         return <DesignBranding />;
+      case 'Réseaux sociaux':
+        return <ReseauxSociaux />;
       case 'Dashboard':
       case "Let's Fight !":
       default:
