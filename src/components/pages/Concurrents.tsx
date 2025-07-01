@@ -618,15 +618,15 @@ const Concurrents: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="p-8">
-        {/* Bannière bleue avec judoka et titre */}
-        <div className="bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800 rounded-2xl p-8 mb-8 relative overflow-hidden">
+        {/* Bannière bleue réduite de 20% avec judoka et titre */}
+        <div className="bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800 rounded-2xl p-6 mb-8 relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-br from-blue-600/20 to-transparent"></div>
           
           <div className="relative z-10 flex items-center justify-between">
             {/* Zone gauche avec judoka agrandi +20% et titre */}
             <div className="flex items-center space-x-6">
               {/* Judoka agrandi de 20% (de w-40 h-40 à w-48 h-48) */}
-              <div className="w-60 h-60 flex items-center justify-center">
+              <div className="w-48 h-48 flex items-center justify-center">
                 <img 
                   src="/judoka.png" 
                   alt="Judoka Beezia" 
@@ -649,16 +649,15 @@ const Concurrents: React.FC = () => {
           </div>
         </div>
 
-        {/* Menu horizontal des onglets par prestation */}
+        {/* Menu horizontal des onglets par prestation - Alignement à gauche */}
         <div className="mb-8 relative">
-          <nav className="flex flex-wrap bg-gray-100 p-1 rounded-xl gap-1" aria-label="Tabs">
+          <nav className="flex flex-wrap bg-gray-100 p-1 rounded-xl gap-1 justify-start" aria-label="Tabs">
             {tabs.map((tab, index) => {
               const Icon = tab.icon;
               const isActive = activeTab === tab.id;
-              const isLast = index === tabs.length - 1;
               
               return (
-                <div key={tab.id} className={`relative ${isLast ? 'ml-auto' : ''}`}>
+                <div key={tab.id} className="relative">
                   {/* Icône d'information pour Maintenance & Support */}
                   {tab.id === 'Maintenance & Support' && (
                     <div className="absolute -top-6 right-2 group">
