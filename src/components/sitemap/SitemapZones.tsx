@@ -30,18 +30,6 @@ export default function SitemapZones({
     return baseStyle;
   };
 
-  const handleDragOver = (e: React.DragEvent, level: 1 | 2 | 3) => {
-    e.preventDefault();
-    e.dataTransfer.dropEffect = 'move';
-    onDragOver(e, level);
-  };
-
-  const handleDrop = (e: React.DragEvent, level: 1 | 2 | 3) => {
-    e.preventDefault();
-    e.stopPropagation();
-    onDrop(e, level);
-  };
-
   return (
     <div className="mb-8">
       <div className="mb-4">
@@ -65,8 +53,8 @@ export default function SitemapZones({
                 p-4 border-2 border-dashed rounded-lg text-center transition-all duration-200
                 ${getZoneStyle(zone.level)} hover:shadow-md cursor-pointer
               `}
-              onDragOver={(e) => handleDragOver(e, zone.level)}
-              onDrop={(e) => handleDrop(e, zone.level)}
+              onDragOver={(e) => onDragOver(e, zone.level)}
+              onDrop={(e) => onDrop(e, zone.level)}
             >
               <span className="text-sm font-medium">{zone.name}</span>
             </div>

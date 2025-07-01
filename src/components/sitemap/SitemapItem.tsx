@@ -83,35 +83,7 @@ export default function SitemapItem({
       e.preventDefault();
       return;
     }
-    e.dataTransfer.effectAllowed = 'move';
-    e.dataTransfer.setData('text/plain', page.id);
     onDragStart(page, e);
-  };
-
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.dataTransfer.dropEffect = 'move';
-    
-    const rect = e.currentTarget.getBoundingClientRect();
-    const y = e.clientY - rect.top;
-    const height = rect.height;
-    
-    // Determine if we're in the top or bottom half
-    const position = y < height / 2 ? 'above' : 'below';
-    onDragOver(e, page.id, position);
-  };
-
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    
-    const rect = e.currentTarget.getBoundingClientRect();
-    const y = e.clientY - rect.top;
-    const height = rect.height;
-    
-    // Determine if we're in the top or bottom half
-    const position = y < height / 2 ? 'above' : 'below';
-    onDrop(e, page.id, position);
   };
 
   const handleLevelChange = (newLevel: 1 | 2 | 3) => {
@@ -185,8 +157,8 @@ export default function SitemapItem({
         onDragStart={handleDragStart}
         onDrag={onDrag}
         onDragEnd={onDragEnd}
-        onDragOver={handleDragOver}
-        onDrop={handleDrop}
+        onDragOver={(e) => onDragOver(e, page.id, 'above')}
+        onDrop={(e) => onDrop(e, page.id, 'above')}
       >
         <div className="flex items-center gap-4">
           {/* Level Indicator Line */}
@@ -198,14 +170,7 @@ export default function SitemapItem({
           )}
 
           {/* Drag Handle */}
-          <div 
-            className={`cursor-move ${page.isFixed ? 'opacity-40 cursor-not-allowed' : 'hover:bg-gray-100'} p-1 rounded`}
-            onMouseDown={(e) => {
-              if (page.isFixed) {
-                e.preventDefault();
-              }
-            }}
-          >
+          <div className={`cursor-move ${page.isFixed ? 'opacity-40 cursor-not-allowed' : 'hover:bg-gray-100'} p-1 rounded`}>
             {page.isFixed ? <Lock className="w-4 h-4 text-gray-400" /> : <GripVertical className="w-4 h-4 text-gray-400" />}
           </div>
 
