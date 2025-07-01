@@ -190,6 +190,8 @@ export const useClientManager = () => {
         valeurs: [
           { title: 'waiting_for_data', description: 'waiting_for_data' },
           { title: 'waiting_for_data', description: 'waiting_for_data' },
+          { title: 'waiting_for_data', description: 'waiting_for_data' },
+          { title: 'waiting_for_data', description: 'waiting_for_data' },
           { title: 'waiting_for_data', description: 'waiting_for_data' }
         ],
         cibles: [

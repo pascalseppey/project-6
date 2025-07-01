@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Building2, Heart, Target, Users, Briefcase, Edit3, Save, X, Info } from 'lucide-react';
+import { Building2, Heart, Target, Users, Briefcase, Edit3, Save, X, Info, Plus, Trash2 } from 'lucide-react';
 import { useAppSelector, useAppDispatch } from '../../hooks';
 import { updateClientData } from '../../store/slices/currentClientSlice';
 
@@ -162,6 +162,19 @@ const InfosGenerales: React.FC = () => {
     dispatch(updateClientData({ path: `data.valeurs.${index}.${field}`, value }));
   };
 
+  const ajouterValeur = () => {
+    const nouvelleValeur = { title: 'waiting_for_data', description: 'waiting_for_data' };
+    const updatedValeurs = [...currentClient.data.valeurs, nouvelleValeur];
+    dispatch(updateClientData({ path: 'data.valeurs', value: updatedValeurs }));
+  };
+
+  const supprimerValeur = (index: number) => {
+    if (currentClient.data.valeurs.length > 1) {
+      const updatedValeurs = currentClient.data.valeurs.filter((_, i) => i !== index);
+      dispatch(updateClientData({ path: 'data.valeurs', value: updatedValeurs }));
+    }
+  };
+
   const updateCible = (index: number, field: string, value: string) => {
     dispatch(updateClientData({ path: `data.cibles.${index}.${field}`, value }));
   };
@@ -240,30 +253,54 @@ const InfosGenerales: React.FC = () => {
 
       case 'Valeurs':
         return (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {currentClient.data.valeurs.map((valeur, index) => (
-              <div key={index} className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm">
-                <div className="mb-4">
-                  <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider mb-3">
-                    Valeur {index + 1}
-                  </h3>
-                  <EditableField
-                    value={valeur.title}
-                    onSave={(value) => updateValeur(index, 'title', value)}
-                    placeholder="Nom de la valeur"
-                    isTitle={true}
-                  />
+          <div className="space-y-6">
+            <div className="flex justify-between items-center">
+              <h3 className="text-xl font-semibold text-gray-900">Valeurs de l'entreprise</h3>
+              <button
+                onClick={ajouterValeur}
+                className="flex items-center space-x-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                <Plus className="w-4 h-4" />
+                <span>Ajouter une valeur</span>
+              </button>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {currentClient.data.valeurs.map((valeur, index) => (
+                <div key={index} className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm">
+                  <div className="flex justify-between items-start mb-4">
+                    <h4 className="text-sm font-medium text-gray-500 uppercase tracking-wider">
+                      Valeur {index + 1}
+                    </h4>
+                    {currentClient.data.valeurs.length > 1 && (
+                      <button
+                        onClick={() => supprimerValeur(index)}
+                        className="text-red-500 hover:text-red-700 transition-colors"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    )}
+                  </div>
+                  
+                  <div className="mb-4">
+                    <EditableField
+                      value={valeur.title}
+                      onSave={(value) => updateValeur(index, 'title', value)}
+                      placeholder="Nom de la valeur"
+                      isTitle={true}
+                    />
+                  </div>
+                  <div>
+                    <EditableField
+                      value={valeur.description}
+                      onSave={(value) => updateValeur(index, 'description', value)}
+                      multiline={true}
+                      placeholder="Description de cette valeur..."
+                    />
+                  </div>
                 </div>
-                <div>
-                  <EditableField
-                    value={valeur.description}
-                    onSave={(value) => updateValeur(index, 'description', value)}
-                    multiline={true}
-                    placeholder="Description de cette valeur..."
-                  />
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         );
 
