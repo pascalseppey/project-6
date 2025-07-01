@@ -83,7 +83,7 @@ const ClientSelector: React.FC = () => {
           
           {/* Liste des clients */}
           <div className="max-h-64 overflow-y-auto">
-            {availableClients
+            {[...availableClients]
               .sort((a, b) => a.nom.localeCompare(b.nom))
               .map((client) => (
               <button
