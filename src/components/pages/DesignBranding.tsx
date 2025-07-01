@@ -627,16 +627,20 @@ const DesignBranding: React.FC = () => {
 
   return (
     <div className="p-8">
-      {/* Bannière bleue avec abeille emoji et titre */}
+      {/* Bannière bleue avec abeille boxeuse et titre */}
       <div className="bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800 rounded-2xl p-8 mb-8 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-blue-600/20 to-transparent"></div>
         
         <div className="relative z-10 flex items-center justify-between">
-          {/* Zone gauche avec abeille emoji et titre */}
+          {/* Zone gauche avec abeille boxeuse et titre */}
           <div className="flex items-center space-x-6">
-            {/* Abeille emoji qui vole à gauche du texte */}
-            <div className="text-6xl animate-bounce">
-              🐝
+            {/* Abeille boxeuse qui remplace l'emoji */}
+            <div className="w-20 h-20 flex items-center justify-center">
+              <img 
+                src="/ChatGPT Image 1 juil. 2025, 04_32_03.png" 
+                alt="Abeille Boxeuse Beezia" 
+                className="w-16 h-16 object-contain drop-shadow-lg animate-pulse"
+              />
             </div>
             <div>
               <h1 className="text-4xl font-bold text-white mb-2">Design & Branding</h1>
