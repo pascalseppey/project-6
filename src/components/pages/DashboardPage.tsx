@@ -1,7 +1,8 @@
-import React from 'react';
-import { Zap } from 'lucide-react';
+import React, { useEffect, useRef } from 'react';
+import { Zap, Wifi, WifiOff } from 'lucide-react';
 import MiniChart from '../charts/MiniChart';
 import LargePercentageCircle from '../charts/LargePercentageCircle';
+import BeeziaAnalytics from '../../services/BeeziaAnalytics';
 
 interface DashboardPageProps {
   activeTab: string;
@@ -16,6 +17,9 @@ interface DashboardPageProps {
     avisClients: number;
   };
   currentStep: string;
+  setProgressSteps: (steps: any) => void;
+  setCurrentStep: (step: string) => void;
+  setIsLoading: (loading: boolean) => void;
 }
 
 const DashboardPage: React.FC<DashboardPageProps> = ({
@@ -25,8 +29,111 @@ const DashboardPage: React.FC<DashboardPageProps> = ({
   setWebsiteUrl,
   handleLetsFightClick,
   progressSteps,
-  currentStep
+  currentStep,
+  setProgressSteps,
+  setCurrentStep,
+  setIsLoading
 }) => {
+  const analyticsRef = useRef<BeeziaAnalytics | null>(null);
+  const [isConnected, setIsConnected] = React.useState(false);
+  const [connectionError, setConnectionError] = React.useState<string | null>(null);
+
+  // Initialiser BeeziaAnalytics
+  useEffect(() => {
+    analyticsRef.current = new BeeziaAnalytics();
+    
+    // Tester la connexion au démarrage
+    const testConnection = async () => {
+      if (analyticsRef.current) {
+        const connected = await analyticsRef.current.testConnection();
+        setIsConnected(connected);
+        if (!connected) {
+          setConnectionError('Serveur d\'analyse non disponible');
+        }
+      }
+    };
+    
+    testConnection();
+    
+    // Nettoyer à la fermeture
+    return () => {
+      if (analyticsRef.current) {
+        analyticsRef.current.disconnect();
+      }
+    };
+  }, []);
+
+  // Nouvelle fonction Let's Fight avec BeeziaAnalytics
+  const handleBeeziaLetsFight = async () => {
+    if (!websiteUrl.trim()) {
+      alert('Veuillez entrer une URL de site web');
+      return;
+    }
+    
+    if (!analyticsRef.current) {
+      alert('Service d\'analyse non initialisé');
+      return;
+    }
+
+    // Réinitialiser les cercles
+    setProgressSteps({
+      siteWeb: 0,
+      corporateId: 0,
+      ficheGmb: 0,
+      avisClients: 0
+    });
+    setCurrentStep('');
+    setIsLoading(true);
+
+    try {
+      await analyticsRef.current.onLetsFightClick(websiteUrl, {
+        onProgress: (progress) => {
+          console.log('🔄 Mise à jour des cercles:', progress);
+          
+          // Mapper les données reçues vers nos cercles
+          setProgressSteps({
+            siteWeb: Math.round(progress.details.website),
+            corporateId: Math.round(progress.details.corporateId),
+            ficheGmb: Math.round(progress.details.gmb),
+            avisClients: Math.round(progress.details.reviews)
+          });
+          
+          // Déterminer l'étape actuelle
+          if (progress.details.website < 100) {
+            setCurrentStep('siteWeb');
+          } else if (progress.details.corporateId < 100) {
+            setCurrentStep('corporateId');
+          } else if (progress.details.gmb < 100) {
+            setCurrentStep('ficheGmb');
+          } else if (progress.details.reviews < 100) {
+            setCurrentStep('avisClients');
+          } else {
+            setCurrentStep('');
+          }
+        },
+        
+        onComplete: () => {
+          console.log('✅ Analyse terminée !');
+          setIsLoading(false);
+          setCurrentStep('');
+          alert('🎉 Analyse terminée avec succès !');
+        },
+        
+        onError: (error) => {
+          console.error('❌ Erreur analyse:', error);
+          setIsLoading(false);
+          setCurrentStep('');
+          alert(`❌ Erreur: ${error}`);
+        }
+      });
+      
+    } catch (error) {
+      console.error('❌ Erreur Let\'s Fight:', error);
+      setIsLoading(false);
+      setCurrentStep('');
+    }
+  };
+
   const isLetsFight = activeTab === "Let's Fight !";
   const pageTitle = isLetsFight ? "Let's Fight !" : "Dashboard";
   const pageSubtitle = isLetsFight ? "Ready to conquer your goals!" : "Welcome back! Here's what's happening.";
@@ -105,13 +212,28 @@ const DashboardPage: React.FC<DashboardPageProps> = ({
             />
           </div>
           
-          {/* Bouton Let's Fight ! en jaune abeille */}
-          <div className="flex flex-col">
-            <div className="h-6"></div> {/* Espacement pour aligner avec le champ */}
+          {/* Indicateur de connexion */}
+          <div className="flex flex-col items-center">
+            <div className="h-6 flex items-center">
+              {isConnected ? (
+                <div className="flex items-center space-x-1 text-green-600">
+                  <Wifi className="w-4 h-4" />
+                  <span className="text-xs">Connecté</span>
+                </div>
+              ) : (
+                <div className="flex items-center space-x-1 text-red-600">
+                  <WifiOff className="w-4 h-4" />
+                  <span className="text-xs">Hors ligne</span>
+                </div>
+              )}
+            </div>
+            
+            {/* Bouton Let's Fight ! en jaune abeille */}
             <button 
-              onClick={handleLetsFightClick}
+              onClick={isConnected ? handleBeeziaLetsFight : handleLetsFightClick}
               className={`flex items-center space-x-2 bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-black px-6 py-3 rounded-xl transition-all duration-200 shadow-lg shadow-yellow-400/25 hover:shadow-yellow-500/40 font-semibold ${isLoading ? 'opacity-75 cursor-not-allowed' : 'hover:shadow-xl'}`}
               disabled={isLoading}
+              title={isConnected ? 'Analyse en temps réel avec BeeziaAnalytics' : 'Mode simulation (serveur hors ligne)'}
             >
               <Zap className="w-5 h-5" />
               <span>{isLoading ? 'Fighting...' : buttonText}</span>
@@ -119,6 +241,19 @@ const DashboardPage: React.FC<DashboardPageProps> = ({
           </div>
         </div>
       </div>
+
+      {/* Affichage des erreurs de connexion */}
+      {connectionError && (
+        <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+          <div className="flex items-center space-x-2">
+            <WifiOff className="w-5 h-5 text-yellow-600" />
+            <span className="text-yellow-800 font-medium">Mode hors ligne</span>
+          </div>
+          <p className="text-yellow-700 text-sm mt-1">
+            {connectionError}. L'analyse utilisera le mode simulation.
+          </p>
+        </div>
+      )}
 
       {/* Hero Section avec Abeille et Graphiques */}
       <div className="bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800 rounded-2xl p-8 mb-12 relative overflow-hidden">
@@ -136,6 +271,23 @@ const DashboardPage: React.FC<DashboardPageProps> = ({
             </div>
             <h3 className="text-white text-3xl font-bold mb-2">Let's Fight !</h3>
             <p className="text-blue-100 text-center text-lg">But always with love !</p>
+            
+            {/* Indicateur du mode d'analyse */}
+            <div className="mt-4 px-4 py-2 bg-white/20 backdrop-blur-sm rounded-lg border border-white/30">
+              <div className="flex items-center space-x-2 text-white text-sm">
+                {isConnected ? (
+                  <>
+                    <Wifi className="w-4 h-4" />
+                    <span>Analyse temps réel</span>
+                  </>
+                ) : (
+                  <>
+                    <WifiOff className="w-4 h-4" />
+                    <span>Mode simulation</span>
+                  </>
+                )}
+              </div>
+            </div>
           </div>
 
           {/* Zone Graphiques - 4 cercles de progression pour Let's Fight */}

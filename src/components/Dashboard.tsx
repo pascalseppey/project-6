@@ -33,7 +33,7 @@ const Dashboard = () => {
     return () => clearInterval(timer);
   }, []);
 
-  // Animation séquentielle des cercles de progression
+  // Animation séquentielle des cercles de progression (mode simulation)
   useEffect(() => {
     let interval;
     if (isLoading) {
@@ -116,6 +116,9 @@ const Dashboard = () => {
             handleLetsFightClick={handleLetsFightClick}
             progressSteps={progressSteps}
             currentStep={currentStep}
+            setProgressSteps={setProgressSteps}
+            setCurrentStep={setCurrentStep}
+            setIsLoading={setIsLoading}
           />
         );
     }
