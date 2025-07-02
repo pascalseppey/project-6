@@ -32,8 +32,8 @@ class BeeziaAnalytics {
   private callbacks: AnalysisCallbacks = {};
 
   constructor() {
-    this.apiUrl = import.meta.env.VITE_ANALYTICS_API_URL || 'http://localhost:3005/api/beezia';
-    this.wsUrl = import.meta.env.VITE_ANALYTICS_WS_URL || 'ws://localhost:3005';
+    this.apiUrl = '/api/beezia';
+    this.wsUrl = window.location.origin;
   }
 
   async onLetsFightClick(siteUrl: string, callbacks: AnalysisCallbacks = {}): Promise<void> {
