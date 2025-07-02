@@ -179,6 +179,19 @@ const InfosGenerales: React.FC = () => {
     dispatch(updateClientData({ path: `data.cibles.${index}.${field}`, value }));
   };
 
+  const ajouterCible = () => {
+    const nouvelleCible = { title: 'waiting_for_data', description: 'waiting_for_data' };
+    const updatedCibles = [...currentClient.data.cibles, nouvelleCible];
+    dispatch(updateClientData({ path: 'data.cibles', value: updatedCibles }));
+  };
+
+  const supprimerCible = (index: number) => {
+    if (currentClient.data.cibles.length > 1) {
+      const updatedCibles = currentClient.data.cibles.filter((_, i) => i !== index);
+      dispatch(updateClientData({ path: 'data.cibles', value: updatedCibles }));
+    }
+  };
+
   const updatePrestation = (index: number, field: string, value: string) => {
     dispatch(updateClientData({ path: `data.prestations.${index}.${field}`, value }));
   };
@@ -306,30 +319,54 @@ const InfosGenerales: React.FC = () => {
 
       case 'Cibles Clients':
         return (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {currentClient.data.cibles.map((cible, index) => (
-              <div key={index} className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm">
-                <div className="mb-4">
-                  <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider mb-3">
-                    Client {index + 1}
-                  </h3>
-                  <EditableField
-                    value={cible.title}
-                    onSave={(value) => updateCible(index, 'title', value)}
-                    placeholder="Type de client"
-                    isTitle={true}
-                  />
+          <div className="space-y-6">
+            <div className="flex justify-between items-center">
+              <h3 className="text-xl font-semibold text-gray-900">Cibles clients</h3>
+              <button
+                onClick={ajouterCible}
+                className="flex items-center space-x-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                <Plus className="w-4 h-4" />
+                <span>Ajouter une cible</span>
+              </button>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {currentClient.data.cibles.map((cible, index) => (
+                <div key={index} className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm">
+                  <div className="flex justify-between items-start mb-4">
+                    <h4 className="text-sm font-medium text-gray-500 uppercase tracking-wider">
+                      Client {index + 1}
+                    </h4>
+                    {currentClient.data.cibles.length > 1 && (
+                      <button
+                        onClick={() => supprimerCible(index)}
+                        className="text-red-500 hover:text-red-700 transition-colors"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    )}
+                  </div>
+                  
+                  <div className="mb-4">
+                    <EditableField
+                      value={cible.title}
+                      onSave={(value) => updateCible(index, 'title', value)}
+                      placeholder="Type de client"
+                      isTitle={true}
+                    />
+                  </div>
+                  <div>
+                    <EditableField
+                      value={cible.description}
+                      onSave={(value) => updateCible(index, 'description', value)}
+                      multiline={true}
+                      placeholder="Description de cette cible..."
+                    />
+                  </div>
                 </div>
-                <div>
-                  <EditableField
-                    value={cible.description}
-                    onSave={(value) => updateCible(index, 'description', value)}
-                    multiline={true}
-                    placeholder="Description de cette cible..."
-                  />
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         );
 

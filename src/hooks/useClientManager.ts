@@ -192,9 +192,14 @@ export const useClientManager = () => {
           { title: 'waiting_for_data', description: 'waiting_for_data' },
           { title: 'waiting_for_data', description: 'waiting_for_data' },
           { title: 'waiting_for_data', description: 'waiting_for_data' },
+          { title: 'waiting_for_data', description: 'waiting_for_data' },
           { title: 'waiting_for_data', description: 'waiting_for_data' }
         ],
         cibles: [
+          { title: 'waiting_for_data', description: 'waiting_for_data' },
+          { title: 'waiting_for_data', description: 'waiting_for_data' },
+          { title: 'waiting_for_data', description: 'waiting_for_data' },
+          { title: 'waiting_for_data', description: 'waiting_for_data' },
           { title: 'waiting_for_data', description: 'waiting_for_data' },
           { title: 'waiting_for_data', description: 'waiting_for_data' }
         ],
