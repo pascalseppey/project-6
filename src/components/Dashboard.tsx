@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import Sidebar from './layout/Sidebar';
 import Header from './layout/Header';
+import MobileHeader from './layout/MobileHeader';
+import MobileNavigation from './layout/MobileNavigation';
+import MobileDashboard from './mobile/MobileDashboard';
 import DashboardPage from './pages/DashboardPage';
 import InfosGenerales from './pages/InfosGenerales';
 import Localisation from './pages/Localisation';
@@ -23,6 +26,19 @@ const Dashboard = () => {
     avisClients: 0
   });
   const [currentStep, setCurrentStep] = useState('');
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Détecter si on est sur mobile
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   // Mettre à jour l'heure toutes les secondes
   useEffect(() => {
@@ -87,6 +103,22 @@ const Dashboard = () => {
 
   // Fonction pour rendre le contenu principal
   const renderMainContent = () => {
+    // Version mobile
+    if (isMobile) {
+      return (
+        <MobileDashboard
+          activeTab={activeTab}
+          isLoading={isLoading}
+          websiteUrl={websiteUrl}
+          setWebsiteUrl={setWebsiteUrl}
+          handleLetsFightClick={handleLetsFightClick}
+          progressSteps={progressSteps}
+          currentStep={currentStep}
+        />
+      );
+    }
+
+    // Version desktop
     switch (activeTab) {
       case 'Infos générales':
         return <InfosGenerales />;
@@ -124,6 +156,28 @@ const Dashboard = () => {
     }
   };
 
+  // Layout mobile
+  if (isMobile) {
+    return (
+      <div className="min-h-screen bg-gray-50 font-inter flex flex-col">
+        <MobileHeader 
+          onMenuClick={() => setIsMobileMenuOpen(true)}
+          currentTime={currentTime}
+        />
+        
+        {renderMainContent()}
+        
+        <MobileNavigation
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+          isOpen={isMobileMenuOpen}
+          onClose={() => setIsMobileMenuOpen(false)}
+        />
+      </div>
+    );
+  }
+
+  // Layout desktop
   return (
     <div className="flex min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 font-inter">
       <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />

@@ -46,10 +46,121 @@
   }
 }
 
+@keyframes slideInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideUp {
+  0% {
+    transform: translateY(100%);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideDown {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(100%);
+  }
+}
+
+@keyframes fadeInScale {
+  0% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes bounceIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+  70% {
+    transform: scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes glow {
+  0%, 100% {
+    box-shadow: 0 0 5px rgba(59, 130, 246, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.8);
+  }
+}
+
+@keyframes ripple {
+  0% {
+    transform: scale(0);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(4);
+    opacity: 0;
+  }
+}
+
 .shimmer {
   background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
   background-size: 200px 100%;
   animation: shimmer 1.5s infinite;
+}
+
+.animate-slide-up {
+  animation: slideUp 0.5s ease-out forwards;
+}
+
+.animate-slide-down {
+  animation: slideDown 0.3s ease-in forwards;
+}
+
+.animate-fade-in-scale {
+  animation: fadeInScale 0.3s ease-out forwards;
+}
+
+.animate-bounce-in {
+  animation: bounceIn 0.6s ease-out forwards;
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.animate-glow {
+  animation: glow 2s ease-in-out infinite;
 }
 
 /* Effet de glassmorphism */
@@ -123,13 +234,56 @@
   animation: spin 1s linear infinite;
 }
 
-/* Responsive utilities */
-@media (max-width: 640px) {
+/* Ripple effect pour les boutons */
+.ripple {
+  position: relative;
+  overflow: hidden;
+}
+
+.ripple::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.5);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.ripple:active::before {
+  width: 300px;
+  height: 300px;
+}
+
+/* Mobile-specific styles */
+@media (max-width: 768px) {
   .mobile-padding {
     @apply px-4 py-3;
   }
+  
+  .mobile-text {
+    @apply text-sm;
+  }
+  
+  .mobile-card {
+    @apply rounded-2xl shadow-lg;
+  }
+  
+  /* Améliorer les zones de touch sur mobile */
+  button, a, input, select, textarea {
+    min-height: 44px;
+  }
+  
+  /* Optimiser les animations sur mobile */
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
 }
 
+/* Responsive utilities */
 @media (min-width: 1024px) {
   .desktop-padding {
     @apply px-8 py-6;
@@ -278,4 +432,99 @@
 
 .body-small {
   @apply text-sm sm:text-base leading-relaxed;
+}
+
+/* Mobile-specific enhancements */
+@media (max-width: 768px) {
+  /* Smooth scrolling pour mobile */
+  html {
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  /* Optimiser les performances sur mobile */
+  * {
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+  }
+  
+  /* Améliorer les interactions tactiles */
+  .touch-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* Styles pour les swipe gestures */
+  .swipeable {
+    touch-action: pan-x pan-y;
+  }
+}
+
+/* Animations spécifiques mobile */
+@media (max-width: 768px) {
+  .mobile-slide-in {
+    animation: slideInUp 0.4s ease-out forwards;
+  }
+  
+  .mobile-fade-in {
+    animation: fadeInScale 0.3s ease-out forwards;
+  }
+  
+  .mobile-bounce {
+    animation: bounceIn 0.5s ease-out forwards;
+  }
+}
+
+/* Status bar styles pour mobile */
+.status-bar {
+  height: 24px;
+  background: #000;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+/* Navigation mobile styles */
+.mobile-nav {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+/* Pull to refresh styles */
+.pull-to-refresh {
+  transform: translateY(-100px);
+  transition: transform 0.3s ease;
+}
+
+.pull-to-refresh.active {
+  transform: translateY(0);
+}
+
+/* Haptic feedback simulation */
+.haptic-light {
+  animation: hapticLight 0.1s ease;
+}
+
+.haptic-medium {
+  animation: hapticMedium 0.15s ease;
+}
+
+.haptic-heavy {
+  animation: hapticHeavy 0.2s ease;
+}
+
+@keyframes hapticLight {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+}
+
+@keyframes hapticMedium {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+@keyframes hapticHeavy {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.08); }
 }
