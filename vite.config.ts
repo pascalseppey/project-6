@@ -6,20 +6,5 @@ export default defineConfig({
   plugins: [react()],
   optimizeDeps: {
     exclude: ['lucide-react'],
-  },
-  server: {
-    proxy: {
-      '/api/beezia': {
-        target: 'http://localhost:3005',
-        changeOrigin: true,
-        secure: false,
-      },
-      '/socket.io': {
-        target: 'http://localhost:3005',
-        changeOrigin: true,
-        secure: false,
-        ws: true,
-      }
-    }
   }
 });
