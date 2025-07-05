@@ -35,7 +35,7 @@ const Dashboard = () => {
 
   // Animation séquentielle des cercles de progression (mode simulation)
   useEffect(() => {
-    let interval;
+    let interval: NodeJS.Timeout;
     if (isLoading) {
       interval = setInterval(() => {
         setProgressSteps(prev => {
@@ -125,12 +125,14 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="flex min-h-screen bg-gray-50 font-inter">
+    <div className="flex min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 font-inter">
       <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
       
-      <main className="flex-1 overflow-hidden">
+      <main className="flex-1 overflow-hidden flex flex-col">
         <Header currentTime={currentTime} />
-        {renderMainContent()}
+        <div className="flex-1 overflow-y-auto">
+          {renderMainContent()}
+        </div>
       </main>
     </div>
   );
